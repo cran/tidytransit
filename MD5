@@ -1,4 +1,4 @@
-b301e15f131711426cf89f461ee6d105 *DESCRIPTION
+15d81235e6b2e9120c597fab1018a6fd *DESCRIPTION
 6079229f7ccd46a420a5bf0c9764a57c *NAMESPACE
 e7c4c7ae178443c28884d7dd26b2eebb *R/data.R
 5a795dc10f0d8597ed28e9b5a9195df2 *R/frequencies.R
@@ -16,9 +16,9 @@ ebe9b4af22734d040cc0dabb74467727 *R/validate.R
 a4fd049a7614d160b9550829ec5dd773 *build/vignette.rds
 c2ab39563aa1c765034fe2c98698c2b6 *data/feedlist_df.rda
 e8248d9648bdc8d0e5678e88d1e993d6 *data/gtfs_obj.rda
-b6d8222450859246f014480833ca9cbc *inst/doc/introduction.R
-d7b17989925b716df37b6790e3924d26 *inst/doc/introduction.Rmd
-a287222eb1b2b7c3901e4213f468a097 *inst/doc/introduction.html
+69ec587a5101de813dd1aa574f06d850 *inst/doc/introduction.R
+9d968e6005c61fe0cdf2548460acfb14 *inst/doc/introduction.Rmd
+c359f5e3568f9441e929450c0f5e598b *inst/doc/introduction.html
 7b7145662e67a18f3e3ae897ee4b62f0 *inst/doc/tidytransit-introduction.R
 a25a837bc4dc835ecb3e32424401b9bf *inst/doc/tidytransit-introduction.Rmd
 ab3a83a1d7bfad47b857796ae4f7ad1f *inst/doc/tidytransit-introduction.html
@@ -61,4 +61,4 @@ e145bd8964d1defc6ed55cf59ea5d1ba *tests/testthat/test-main.R
 bf26fa9e1b0d9ea118ca7c764be22f4a *tests/testthat/test-spatial.R
 b7c2a956d9f20e38732278fe4415c235 *tests/testthat/test_headways.R
 945e22efedc1159db510cc180f0aa001 *vignettes/figures/GTFS_class_diagram.svg.png
-d7b17989925b716df37b6790e3924d26 *vignettes/introduction.Rmd
+9d968e6005c61fe0cdf2548460acfb14 *vignettes/introduction.Rmd
