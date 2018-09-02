@@ -1,12 +1,14 @@
-library(sf)
 #' Add Simple Features for Stops and Routes to GTFS Object
 #'
 #' @param gtfs_obj a standard gtfsr object
+#' @param quiet boolean whether to print status messages
 #' @return gtfs_obj a gtfsr object with a bunch of simple features tables
 #' @export
-gtfs_as_sf <- function(gtfs_obj) {
-  gtfs_obj$sf_stops <- try(stops_df_as_sf(gtfs_obj$stops_df))
-  gtfs_obj$sf_routes <- try(routes_df_as_sf(gtfs_obj))
+gtfs_as_sf <- function(gtfs_obj, quiet) {
+  if(!quiet) message('Converting stops to simple features ')
+  gtfs_obj$stops_sf <- try(stops_df_as_sf(gtfs_obj$stops_df))
+  if(!quiet) message('Converting routes to simple features ')
+  gtfs_obj$routes_sf <- try(routes_df_as_sf(gtfs_obj))
   return(gtfs_obj)
 }
 
@@ -98,3 +100,4 @@ planner_buffer <- function(df_sf1,dist="h",crs=26910) {
   df3 <- sf::st_buffer(df2,dist=distance)
   return(df3)
 }
+

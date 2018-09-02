@@ -18,7 +18,7 @@
 #' @examples \donttest{
 #' library(dplyr)
 #' u1 <- "https://developers.google.com/transit/gtfs/examples/sample-feed.zip"
-#' sample_gtfs <- import_gtfs(u1)
+#' sample_gtfs <- read_gtfs(u1)
 #' attach(sample_gtfs)
 #' #list routes by the number of stops they have
 #' routes_df %>% inner_join(trips_df, by="route_id") %>%
@@ -29,22 +29,62 @@
 #'           arrange(desc(stop_count))
 #' }
 
-import_gtfs <- function(path, local = FALSE, quiet = FALSE) {
+read_gtfs <- function(path, local = FALSE, quiet = FALSE) {
   if(local) {
     path <- normalizePath(path) 
     data_list <- path %>%
       unzip_file(quiet=quiet) %>% 
          list_files(quiet=quiet) %>%
-            read_and_validate()
+            read_and_validate() %>%
+              get_route_frequency() %>%
+                gtfs_as_sf(quiet=quiet)
   } else {
     data_list <- path %>%
       download_from_url(.) %>%
         unzip_file(quiet = quiet) %>%
           list_files(quiet = quiet) %>%
-            read_and_validate()
+            read_and_validate() %>%
+              get_route_frequency() %>%
+                gtfs_as_sf(quiet=quiet)
   }
 
   return(data_list) 
+}
+
+#' Get and validate dataframes of General Transit Feed Specification (GTFS) data.
+#' 
+#' This function reads GTFS text files from a local or remote zip file. 
+#' It also validates the files against the GTFS specification by file, requirement status, and column name
+#' The data are returned as a list of dataframes and a validation object, 
+#' which contains details on whether all required files were found, 
+#' and which required and optional columns are present. 
+#' 
+#'
+#' @param path Character. url link to zip file OR path to local zip file. if to local path, then option `local` must be set to TRUE.
+#' @param local Boolean. If the paths are searching locally or not. Default is FALSE (that is, urls).
+#' @param quiet Boolean. Whether to see file download progress and files extract. FALSE by default.
+#'
+#' @return Dataframes of GTFS data.
+#' @rdname pkg-deprecated
+#'
+#' @export
+#' @importFrom dplyr %>% arrange summarise group_by inner_join
+#' @examples \donttest{
+#' library(dplyr)
+#' u1 <- "https://developers.google.com/transit/gtfs/examples/sample-feed.zip"
+#' sample_gtfs <- import_gtfs(u1)
+#' attach(sample_gtfs)
+#' #list routes by the number of stops they have
+#' routes_df %>% inner_join(trips_df, by="route_id") %>%
+#'   inner_join(stop_times_df) %>% 
+#'     inner_join(stops_df, by="stop_id") %>% 
+#'       group_by(route_long_name) %>%
+#'         summarise(stop_count=n_distinct(stop_id)) %>%
+#'           arrange(desc(stop_count))
+#' }
+import_gtfs <- function(path, local = FALSE, quiet = FALSE) {
+  .Deprecated("read_gtfs") #include a package argument, too
+  read_gtfs(path, local = FALSE, quiet = FALSE)
 }
 
 #' Download a zipped GTFS feed file from a url
@@ -107,7 +147,11 @@ download_from_url <- function(url, path=tempfile(fileext = ".zip"), quiet=FALSE)
   return(path)
 }
 
-#' Checks UTF-8-BOM encoding. Special thanks to @patperu for finding the issue and to @hrbrmstr for the code to help deal with the issue.
+#' Checks UTF-8-BOM encoding.
+#' 
+#' Special thanks to @patperu for finding the issue and 
+#' to @hrbrmstr for the code to help deal with the issue.
+#' 
 #' @param path the path the the text file
 #' @param encoding can be one of \code{UTF-8}, \code{UTF-16} or \code{UTF-16BE}.
 #'        Although a BOM could be used with UTF-32 and other encodings, such
