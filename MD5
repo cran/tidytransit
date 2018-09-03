@@ -1,13 +1,13 @@
-15d81235e6b2e9120c597fab1018a6fd *DESCRIPTION
+0e56234bcbf568e62570958d4023cc43 *DESCRIPTION
 6079229f7ccd46a420a5bf0c9764a57c *NAMESPACE
 e7c4c7ae178443c28884d7dd26b2eebb *R/data.R
 5a795dc10f0d8597ed28e9b5a9195df2 *R/frequencies.R
 228425398175a4dbbff123a76d664208 *R/globals.R
-97d15349417f534c903b860cc3ea56b9 *R/import.R
+624955e6cbb71e26766fca2b567787c0 *R/import.R
 7abe7f2c3108b2f49589cdcb2274334f *R/joins.R
 b314ceffb1d3c80dca7a3457dca627c0 *R/plot.R
 23ac98bff07481836953c205f80ba9ae *R/service.R
-f0c409d79d2a113b1947d80e1da926d1 *R/spatial.R
+c031f70b20fcfdff630b16726b0eadfc *R/spatial.R
 c41149d5f1f7382b071126072eb1fb3c *R/spec.R
 2ad11a80a107b401767bb0c5f70ba223 *R/time.R
 86bcb65b09ce910f93b49bc155a22859 *R/transitfeeds.R
@@ -18,7 +18,7 @@ c2ab39563aa1c765034fe2c98698c2b6 *data/feedlist_df.rda
 e8248d9648bdc8d0e5678e88d1e993d6 *data/gtfs_obj.rda
 69ec587a5101de813dd1aa574f06d850 *inst/doc/introduction.R
 9d968e6005c61fe0cdf2548460acfb14 *inst/doc/introduction.Rmd
-c359f5e3568f9441e929450c0f5e598b *inst/doc/introduction.html
+ad91cca448e6db2f9fd8b0c378097215 *inst/doc/introduction.html
 7b7145662e67a18f3e3ae897ee4b62f0 *inst/doc/tidytransit-introduction.R
 a25a837bc4dc835ecb3e32424401b9bf *inst/doc/tidytransit-introduction.Rmd
 ab3a83a1d7bfad47b857796ae4f7ad1f *inst/doc/tidytransit-introduction.html
@@ -38,9 +38,9 @@ f47a5b6ea64baaf0e141fa037978cb02 *man/gt_as_dt.Rd
 df8845fc21132e34e73f813ec6fee438 *man/gtfs_as_sf.Rd
 4cd861a08b7db864a4e85b352b10fea7 *man/gtfs_obj.Rd
 95d2648e6d105547fa29f20171591f8b *man/has_api_key.Rd
+40baa344bcffe49d282faadf10972ece *man/import_gtfs.Rd
 b9d76c4fd815ac923d585a9fffefac97 *man/list_files.Rd
 e1305e5efebb7075c4700719e01fc1ca *man/most_frequent_service.Rd
-38e568ae885de53bdcf73a7ea52f70c6 *man/pkg-deprecated.Rd
 d444b1a16fe80e8d8e2cae502baf005b *man/planner_buffer.Rd
 04d4405195463a0d3bfe00f577290a31 *man/plot.gtfs.Rd
 6a42e17ee0c67b96937c63dbd88f63a4 *man/read_gtfs.Rd

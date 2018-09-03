@@ -2,7 +2,7 @@ Package: tidytransit
 Type: Package
 Title: Read, Validate, Analyze, and Map Files in the General Transit
         Feed Specification
-Version: 0.3.1
+Version: 0.3.2
 Authors@R: c(
     person("Tom", "Buckley", role = c("aut", "cre"), email = "tom@tbuckl.com"),
     person("Danton", "Noriega-Goodwin", role = c("aut"), email = "danton.noriega@gmail.com"),
@@ -13,6 +13,7 @@ Authors@R: c(
     person("Mark", "Padgham", role = c("ctb"), email = "mark.padgham@email.com"),
     person("Kearey", "Smith", role = c("ctb")),
     person("Dave", "Vautin", role = c("ctb")),
+    person("Kyle", "Walker", role = c("ctb")),
     person("Elaine", "McVey", role = c("cph"), email = "elaine.mcvey@transloc.com"),
     person("Charles Hans", "Thompson", role = c("cph"), email = "hans.thompson1@gmail.com"),
     person("Michael", "Sumner", role = c("cph"))
@@ -29,7 +30,7 @@ URL: https://github.com/r-transit/tidytransit
 BugReports: https://github.com/r-transit/tidytransit
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2018-09-02 20:08:24 UTC; tbuck
+Packaged: 2018-09-03 00:17:42 UTC; tbuck
 Author: Tom Buckley [aut, cre],
   Danton Noriega-Goodwin [aut],
   Angela Li [aut],
@@ -39,9 +40,10 @@ Author: Tom Buckley [aut, cre],
   Mark Padgham [ctb],
   Kearey Smith [ctb],
   Dave Vautin [ctb],
+  Kyle Walker [ctb],
   Elaine McVey [cph],
   Charles Hans Thompson [cph],
   Michael Sumner [cph]
 Maintainer: Tom Buckley <tom@tbuckl.com>
 Repository: CRAN
-Date/Publication: 2018-09-02 21:20:03 UTC
+Date/Publication: 2018-09-03 07:20:03 UTC
