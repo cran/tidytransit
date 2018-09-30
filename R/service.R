@@ -41,22 +41,3 @@ count_service_trips <- function(trips) {
       dplyr::mutate(service_trips = n()) %>%
         tibble::as_tibble()
 }
-
-#' Get a set of stops for a given set of service ids
-#' 
-#' @param g1 gtfsr object
-#' @param service_ids the service for which to get stops 
-#' @return stops for a given service
-#' @keywords internal
-stops_for_service <- function(g1, select_service_id) {
-  some_trips <- g1$trips_df %>%
-    dplyr::filter(.data$service_id %in% select_service_id)
-  
-  some_stop_times <- g1$stop_times_df %>% 
-    dplyr::filter(.data$trip_id %in% some_trips$trip_id) 
-  
-  some_stops <- g1$stops_df %>%
-    dplyr::filter(.data$stop_id %in% some_stop_times$stop_id)
-  
-  return(some_stops)
-}

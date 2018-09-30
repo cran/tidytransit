@@ -2,12 +2,12 @@ Package: tidytransit
 Type: Package
 Title: Read, Validate, Analyze, and Map Files in the General Transit
         Feed Specification
-Version: 0.3.2
+Version: 0.3.4
 Authors@R: c(
     person("Tom", "Buckley", role = c("aut", "cre"), email = "tom@tbuckl.com"),
     person("Danton", "Noriega-Goodwin", role = c("aut"), email = "danton.noriega@gmail.com"),
+    person("Flavio", "Poletti", role = c("aut"), email = "flavio.poletti@hotmail.ch"),
     person("Angela", "Li", role = c("aut"), email = "angela@rladies.org"),
-    person("Flavio", "Poletti", role = c("ctb"), email = "flavio.poletti@hotmail.ch"),
     person("Patrick", "Hausmann", role = c("ctb"), email = "patrick.hausmann@covimo.de"),
     person("Bob", "Rudis", role = c("ctb"), email = "bob@rud.is"),
     person("Mark", "Padgham", role = c("ctb"), email = "mark.padgham@email.com"),
@@ -22,19 +22,19 @@ Description: Read General Transit Feed Specification (GTFS) zipfiles into a list
 License: GPL
 LazyData: TRUE
 Depends: R (>= 3.2.4)
-Imports: dplyr, tibble, readr, httr, htmltools, magrittr, stringr,
-        assertthat, scales, here, rlang, sf, lubridate, tidyr
+Imports: dplyr, zip, tibble, readr, httr, htmltools, magrittr, stringr,
+        assertthat, scales, here, rlang, sf, lubridate, tidyr, tools
 Suggests: testthat, knitr, rmarkdown
 RoxygenNote: 6.1.0
 URL: https://github.com/r-transit/tidytransit
 BugReports: https://github.com/r-transit/tidytransit
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2018-09-03 00:17:42 UTC; tbuck
+Packaged: 2018-09-30 15:50:08 UTC; tbuck
 Author: Tom Buckley [aut, cre],
   Danton Noriega-Goodwin [aut],
+  Flavio Poletti [aut],
   Angela Li [aut],
-  Flavio Poletti [ctb],
   Patrick Hausmann [ctb],
   Bob Rudis [ctb],
   Mark Padgham [ctb],
@@ -46,4 +46,4 @@ Author: Tom Buckley [aut, cre],
   Michael Sumner [cph]
 Maintainer: Tom Buckley <tom@tbuckl.com>
 Repository: CRAN
-Date/Publication: 2018-09-03 07:20:03 UTC
+Date/Publication: 2018-09-30 16:20:03 UTC

@@ -4,6 +4,7 @@ if(getRversion() >= "3.1.0") {
       '.',
       'agency_id',
       'color',
+      'df_name',
       'field_provided_status',
       'field_spec',
       'field',
@@ -37,7 +38,12 @@ if(getRversion() >= "3.1.0") {
       'median_headways', 
       'mean_headways', 
       'st_dev_headways', 
-      'stop_count'
+      'stop_count',
+      'bool',
+      'start_date',
+      'end_date',
+      'weekday',
+      'exception_type'
     )
   )
 }
