@@ -10,7 +10,6 @@ library(tidytransit)
 # Read in GTFS feed
 # here we use a feed included in the package, but note that you can read directly from the New York City Metropolitan Transit Authority using the following URL:
 # nyc <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
-
 local_gtfs_path <- system.file("extdata", 
                                "google_transit_nyc_subway.zip", 
                                package = "tidytransit")
