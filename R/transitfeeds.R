@@ -1,14 +1,3 @@
-# Purpose -----------------------------------------------------------------
-
-# Functions to use transitfeeds API to get a GTFS feed -
-#   mostly this means a good way to explore the metadata and get the url(s)
-#   of the feeds for download
-# These should collectively allow a user to
-# - get a df of locations with descriptions and lat/lng coords
-# - get a df of feeds (either by location or complete) with urls
-# - download the feed from a url as a zip
-
-
 #' Get list of all available feeds from transitfeeds API
 #' @importFrom magrittr "%>%"
 #' @importFrom magrittr "%<>%"
@@ -40,7 +29,8 @@ get_feedlist <- function() {
 
     for (i in 1:response_cycles) {
 
-      sub_req <- tfeeds_get("getFeeds", query = list(limit = max_limit, page = i))
+      sub_req <- tfeeds_get("getFeeds", 
+                            query = list(limit = max_limit, page = i))
       sub_req_df <- tfeeds_parse_getfeedlist(sub_req)
       req_df <- rbind(req_df, sub_req_df)
 
@@ -73,7 +63,8 @@ get_feed <- function(url, path=NULL, quiet=FALSE) {
 
   stopifnot(length(url) == 1)
 
-  # check if single element of dataframe was inputed. if so, convert to single value; error otherwise.
+  # check if single element of dataframe 
+  # was inputed. if so, convert to single value; error otherwise.
   if(!is.null(dim(url))) {
     if(all(dim(url) == c(1,1))) {
       url <- unlist(url, use.names = FALSE)
@@ -86,14 +77,18 @@ get_feed <- function(url, path=NULL, quiet=FALSE) {
   valid <- valid_url(url)
   if(!valid) {
     if(!quiet) {
-      warn1 <- sprintf("Link '%s' is invalid; failed to connect. NULL was returned.", url)
+      warn1 <- 
+        sprintf("Link '%s' is invalid; 
+                failed to connect. NULL was returned.", url)
       warning(warn1)
     }
     return(NULL)
   }
 
   # generate a temporary file path if no path is specified
-  if(is.null(path)) temp <- tempfile(fileext = ".zip") else temp <- file.path(path, 'gtfs_zip.zip')
+  if(is.null(path)) temp <- 
+    tempfile(fileext = ".zip") else 
+      temp <- file.path(path, 'gtfs_zip.zip')
 
   r <- httr::GET(url)
 
@@ -121,14 +116,17 @@ get_feed <- function(url, path=NULL, quiet=FALSE) {
 #' @param feedlist_df A dataframe of feed metadata such as output from get_feedlist
 #' @param test_url Boolean. Whether to test if the url connects or not. FALSE by default (can take a while).
 #'
-#' @return A dataframe of feed metadata for all feeds in input that are downloadable
+#' @return A dataframe of feed metadata 
+#' for all feeds in input that are downloadable
 #'
 #' @keywords internal
 
 filter_feedlist <- function(feedlist_df, test_url = FALSE) {
 
-  if (!is.data.frame(feedlist_df)) stop('Invalid feedlist_df input.  Must be a dataframe.')
-  if (!('url_d' %in% names(feedlist_df))) stop('No valid URLs found - expected url_d column in feedlist_df.')
+  if (!is.data.frame(feedlist_df)) 
+    stop('Invalid feedlist_df input.  Must be a dataframe.')
+  if (!('url_d' %in% names(feedlist_df))) 
+    stop('No valid URLs found - expected url_d column in feedlist_df.')
 
   indx <- feedlist_df$url_d %>%
     sapply(. %>% valid_url(test_url = test_url) %>% all, USE.NAMES = FALSE)
@@ -137,9 +135,9 @@ filter_feedlist <- function(feedlist_df, test_url = FALSE) {
       sum(!indx),
       ' of ',
       nrow(feedlist_df),
-      ' feeds did not provide valid URLs. ',
+      " feeds did not provide valid URLs. ",
       sum(indx),
-      ' returned.'
+      " returned."
     )
   )
 
@@ -157,8 +155,8 @@ filter_feedlist <- function(feedlist_df, test_url = FALSE) {
 #' @noRd
 tools_api_key <- function() {
 
-  get = function() {
-    env <- Sys.getenv('TRANSITFEED_API')
+  get <- function() {
+    env <- Sys.getenv("TRANSITFEED_API")
 
     if(identical(env, "")) {
       message("Couldn't find env var TRANSITFEED_API. Please set you api key using the function set_api_key().")
@@ -167,20 +165,20 @@ tools_api_key <- function() {
 
   }
 
-  set = function() {
+  set <- function() {
     # have user input api key
     message("Please enter your API key you requested from https://transitfeeds.com/api/keys, and press enter:")
     key <- readline(": ")
 
     stopifnot(nchar(key) == 36, is.character(key))
-    valid_api_key <- grepl('[[:alnum:]]{8}\\-[[:alnum:]]{4}\\-[[:alnum:]]{4}\\-[[:alnum:]]{4}\\-[[:alnum:]]{12}', key)
+    valid_api_key <- grepl("[[:alnum:]]{8}\\-[[:alnum:]]{4}\\-[[:alnum:]]{4}\\-[[:alnum:]]{4}\\-[[:alnum:]]{12}", key)
     if(!valid_api_key) {
       stop(sprintf("API key '%s' is invalid. API keys are 36 characters long with pattern XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX.", key))
     }
 
     text <- paste0("TRANSITFEED_API=",key,"\n")
 
-    env <- Sys.getenv('TRANSITFEED_API')
+    env <- Sys.getenv("TRANSITFEED_API")
 
     # check for existing TRANSITFEED_API
     if (!identical(env, "")) { # if found, replace line and rewrite
@@ -197,12 +195,12 @@ tools_api_key <- function() {
   }
 
   has = function() {
-    env <- Sys.getenv('TRANSITFEED_API')
+    env <- Sys.getenv("TRANSITFEED_API")
     if(!identical(env, "")) TRUE else FALSE
   }
 
   clear = function() {
-    env <- Sys.getenv('TRANSITFEED_API')
+    env <- Sys.getenv("TRANSITFEED_API")
 
     # clear TRANSITFEED_API variable
     if (!identical(env, "")) { # if found, replace line and rewrite
@@ -225,18 +223,22 @@ gtfs_api_key <- tools_api_key()
 #' @keywords internal
 clear_api_key <- gtfs_api_key$clear
 
-#' Set API key for recall
+#' Set TransitFeeds API key for recall
 #' @export
 
 set_api_key <- gtfs_api_key$set
 
+api_check <- function() {
+  if(!gtfs_api_key$has())
+      stop("API key not found. Please obtain a key from transitfeeds.com, ",
+           "and set using function 'set_api_key()'")
+}
 
 #' Get API key
 #' @keywords internal
 
 get_api_key <- function() {
-  if(!gtfs_api_key$has()) stop("API key not found. Please set your API key using function 'set_api_key()'")
-
+  api_check()
   gtfs_api_key$get()
 
 }
@@ -249,14 +251,12 @@ get_api_key <- function() {
 #' @keywords internal
 
 has_api_key <- function() {
-
-  if(!gtfs_api_key$has()) stop("API Key not found. Please set your API key using function 'set_api_key()'.")
-
+  api_check()
   api_key <- gtfs_api_key$get()
 
-  valid_api_key <- grepl('[[:alnum:]]{8}\\-[[:alnum:]]{4}\\-[[:alnum:]]{4}\\-[[:alnum:]]{4}\\-[[:alnum:]]{12}', api_key)
+  valid_api_key <- grepl("[[:alnum:]]{8}\\-[[:alnum:]]{4}\\-[[:alnum:]]{4}\\-[[:alnum:]]{4}\\-[[:alnum:]]{12}", api_key)
   if(!valid_api_key) {
-    stop(sprintf("API key '%s' is invalid. API keys are 36 characters long with pattern XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX. Please set your API key using function 'set_api_key()'", api_key))
+    stop(sprintf("API key '%s' is invalid. API keys for transitfeeds.com are 36 characters long with pattern XXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX. Please set your API key using function 'set_api_key()'", api_key))
   } else valid_api_key
 }
 
@@ -334,7 +334,6 @@ tfeeds_parse_getfeedlist <- function(req) {
   feeds_df <-dplyr::bind_rows(feeds_flat)
 
   feeds_df
-
 }
 
 #' Extract location dataframe from transitfeeds getLocation API
@@ -359,7 +358,7 @@ tfeeds_parse_getlocation <- function(req) {
   identical(parsed_content$results, 'locations')
 
   # extract location data into a dataframe
-  loc_df <-dplyr::bind_rows(parsed_content$results$locations)
+  loc_df <- dplyr::bind_rows(parsed_content$results$locations)
 
   loc_df
 
@@ -378,7 +377,11 @@ tfeeds_parse_getlocation <- function(req) {
 #' @details See http://transitfeeds.com/api/ for available API calls
 #'
 
-tfeeds_get <- function(path, query, ..., version = 'v1/', key = if(has_api_key()) gtfs_api_key$get()) {
+tfeeds_get <- function(path, 
+                       query, 
+                       ..., 
+                       version = 'v1/', 
+                       key = if(has_api_key()) gtfs_api_key$get()) {
 
   if (missing(query)) {
     my_query <- list(key = key)
@@ -386,7 +389,9 @@ tfeeds_get <- function(path, query, ..., version = 'v1/', key = if(has_api_key()
     my_query <- c(query, list(key = key))
   }
 
-  req <- httr::GET('http://api.transitfeeds.com/', path = paste0(version, path), query = my_query)
+  req <- httr::GET('http://api.transitfeeds.com/', 
+                   path = paste0(version, path), 
+                   query = my_query)
 
   tfeeds_check(req)
 

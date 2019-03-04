@@ -2,69 +2,82 @@
 #' @param gtfs_obj a gtfs object
 #' @param route_ids the routes for which to join the tables together - required, but not sure why this can't just be any/all routes in routes_df
 #' @param service_ids - an optional filter for a certain service-default NULL
-#' @return shapes_routes_service_df - a dataframe in which routes, services, and shape_ids are all joined
+#' @return shapes_routes_service - a dataframe in which routes, services, and shape_ids are all joined
 #' @keywords internal
 #' @importFrom dplyr %>% group_by filter
 #' @importFrom rlang !! .data :=
-shape_route_service <- function(gtfs_obj, route_ids = NULL, service_ids = NULL) {
+shape_route_service <- function(gtfs_obj, 
+                                route_ids = NULL, 
+                                service_ids = NULL) {
   
   stopifnot(class(gtfs_obj) == 'gtfs',
-            !is.null(gtfs_obj$shapes_df),
-            !is.null(gtfs_obj$trips_df),
-            !is.null(gtfs_obj$routes_df))
+            !is.null(gtfs_obj$shapes),
+            !is.null(gtfs_obj$trips),
+            !is.null(gtfs_obj$routes))
   
   # pull all route_ids if the user doesn't provide any
   if(length(route_ids) == 0) {
-    route_ids <- unique(gtfs_obj$routes_df$route_id)
+    route_ids <- unique(gtfs_obj$routes$route_id)
   }
   
   # check for bad route ids
-  bad_route_ids <- route_ids[which(!route_ids %in% gtfs_obj$routes_df$route_id)]
-  route_ids <- route_ids[which(route_ids %in% gtfs_obj$routes_df$route_id)]
+  bad_route_ids <- route_ids[which(!route_ids %in% gtfs_obj$routes$route_id)]
+  route_ids <- route_ids[which(route_ids %in% gtfs_obj$routes$route_id)]
   
   # error if all route ids are bad
   if(length(route_ids) == 0) {
-    s <- "No provided Route ID(s) were found. Please provide valid Route IDs." %>% sprintf(paste(bad_route_ids, collapse = ", "))
+    s <- "No provided Route ID(s) were found. 
+          Please provide valid Route IDs." %>% 
+      sprintf(paste(bad_route_ids,
+                    collapse = ", "))
     stop(s)
   }
   
   # warn if some route ids are omitted
   if(length(bad_route_ids) > 0) {
-    s <- "Route ID(s) '%s' not found. Omitted." %>% sprintf(paste(bad_route_ids, collapse = ", "))
+    s <- "Route ID(s) '%s' not found. Omitted." %>% 
+      sprintf(paste(bad_route_ids, collapse = ", "))
     warning(s)
   }
   
   if(!is.null(service_ids)) {
-    
     # check service ids
-    bad_service_ids <- service_ids[which(!service_ids %in% gtfs_obj$trips_df$service_id)]
-    service_ids <- service_ids[which(service_ids %in% gtfs_obj$trips_df$service_id)]
-    
+    bad_service_ids <- service_ids[which(!service_ids %in% 
+                                           gtfs_obj$trips$service_id)]
+    service_ids <- service_ids[which(service_ids %in% 
+                                       gtfs_obj$trips$service_id)]
     if(length(service_ids) == 0) {
-      s <- "No provided Service ID(s) --- '%s' --- were found. Please provide valid Service IDs." %>% sprintf(paste(bad_service_ids, collapse = ", "))
+      s <- "No provided Service ID(s) --- 
+            '%s' --- were found. 
+            Please provide valid Service IDs." %>% 
+        sprintf(paste(bad_service_ids, collapse = ", "))
       stop(s)
     }
-    
     if(length(bad_service_ids) > 0) {
-      s <- "Service ID(s) '%s' not found. Omitted." %>% sprintf(paste(bad_service_ids, collapse = ", "))
+      s <- "Service ID(s) '%s' 
+            not found. Omitted." %>% 
+        sprintf(paste(bad_service_ids, collapse = ", "))
       warning(s)
     }
-    
-    shapes_routes_df <- gtfs_obj$trips_df %>%
+    shapes_routes_df <- gtfs_obj$trips %>%
       dplyr::filter(.data$service_id %in% service_ids) %>%
       dplyr::filter(.data$route_id %in% route_ids) %>%
       dplyr::select_('shape_id', 'route_id', 'service_id') %>%
       dplyr::filter(!is.na(.data$shape_id)) %>%
-      dplyr::distinct(.data$service_id, .data$shape_id, .data$route_id, .keep_all = TRUE) # want only distinct routes
+      dplyr::distinct(.data$service_id, 
+                      .data$shape_id, 
+                      .data$route_id, 
+                      .keep_all = TRUE) # want only distinct routes
     
   } else {
-    
-    shapes_routes_df <- gtfs_obj$trips_df %>%
+    shapes_routes_df <- gtfs_obj$trips %>%
       dplyr::slice(which(.data$route_id %in% route_ids)) %>%
       dplyr::select_('shape_id', 'route_id', 'service_id') %>%
       dplyr::filter(!is.na(.data$shape_id)) %>%
-      dplyr::distinct(.data$service_id, .data$shape_id, .data$route_id, .keep_all = TRUE) # want only distinct routes
-    
+      dplyr::distinct(.data$service_id, 
+                      .data$shape_id, 
+                      .data$route_id, 
+                      .keep_all = TRUE) # want only distinct routes
   }
   
   return(shapes_routes_df)
@@ -82,11 +95,11 @@ shape_route_service <- function(gtfs_obj, route_ids = NULL, service_ids = NULL) 
 #' @importFrom rlang !! .data :=
 #' @keywords internal
 shape_for_route <- function(g1, select_route_id, select_service_id) {
-  some_trips <- g1$trips_df %>%
+  some_trips <- g1$trips %>%
     filter(.data$route_id %in% select_route_id & 
              .data$service_id %in% select_service_id)
   
-  some_shapes <- g1$shapes_df %>% 
+  some_shapes <- g1$shapes %>% 
     filter(.data$shape_id %in% some_trips$shape_id) 
   
   some_shapes$route_id <- select_route_id
@@ -101,11 +114,15 @@ shape_for_route <- function(g1, select_route_id, select_service_id) {
 #' @param directional if the routes should by related to a route direction (e.g. inbound, outbound) - currently not implemented
 #' @return shapes for routes
 #' @keywords internal
-shapes_for_routes <- function(g1, route_ids, service_ids, directional=FALSE) {
+shapes_for_routes <- function(g1, 
+                              route_ids, 
+                              service_ids, 
+                              directional=FALSE) {
   l1 = list()
   i <- 1
   for (route_id in route_ids) {
-    l1[[i]] <- shape_for_route(g1,route_id, service_ids)
+    l1[[i]] <- shape_for_route(g1,route_id, 
+                               service_ids)
     i <- i + 1
   }
   df_routes <- do.call("rbind", l1)
@@ -123,19 +140,19 @@ shapes_for_routes <- function(g1, route_ids, service_ids, directional=FALSE) {
 #' @examples \donttest{
 #' local_gtfs_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
 #' nyc <- read_gtfs(local_gtfs_path,local=TRUE)
-#' select_service_id <- filter(nyc$calendar_df,monday==1) %>% pull(service_id)
-#' select_route_id <- sample_n(nyc$routes_df,1) %>% pull(route_id)
-#' filtered_stops_df <- filter_stops(nyc,select_service_id,select_route_id)
+#' select_service_id <- filter(nyc$calendar, monday==1) %>% pull(service_id)
+#' select_route_id <- sample_n(nyc$routes, 1) %>% pull(route_id)
+#' filtered_stops_df <- filter_stops(nyc, select_service_id, select_route_id)
 #' }
 filter_stops <- function(gtfs_obj, service_ids, route_ids) {
-  some_trips <- gtfs_obj$trips_df %>%
+  some_trips <- gtfs_obj$trips %>%
     dplyr::filter(.data$service_id %in% service_ids &
                     .data$route_id %in% route_ids)
   
-  some_stop_times <- gtfs_obj$stop_times_df %>% 
+  some_stop_times <- gtfs_obj$stop_times %>% 
     dplyr::filter(.data$trip_id %in% some_trips$trip_id) 
   
-  some_stops <- gtfs_obj$stops_df %>%
+  some_stops <- gtfs_obj$stops %>%
     dplyr::filter(.data$stop_id %in% some_stop_times$stop_id)
   
   return(some_stops)
