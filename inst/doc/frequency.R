@@ -11,9 +11,17 @@ local_gtfs_path <- system.file("extdata",
                                "google_transit_nyc_subway.zip", 
                                package = "tidytransit")
 nyc <- read_gtfs(local_gtfs_path, 
-                 local=TRUE,
                  geometry=TRUE,
                  frequency=TRUE)
+
+## ------------------------------------------------------------------------
+head(nyc$.$routes_frequency)
+
+## ------------------------------------------------------------------------
+head(nyc$.$stops_frequency)
+
+## ------------------------------------------------------------------------
+plot(nyc)
 
 ## ------------------------------------------------------------------------
 some_stops_freq_sf <- nyc$.$stops_sf %>%
@@ -49,14 +57,4 @@ nyc <- get_route_frequency(nyc, service_id = services_on_180823, start_hour = 16
 
 ## ------------------------------------------------------------------------
 head(nyc$.$routes_frequency)
-
-## ------------------------------------------------------------------------
-routes_sf_frequencies <- nyc$.$routes_sf %>% 
-  inner_join(nyc$.$routes_frequency, by = "route_id") %>% 
-          select(route_id,
-                 median_headways, 
-                 mean_headways, 
-                 st_dev_headways, 
-                 stop_count)
-plot(routes_sf_frequencies)
 

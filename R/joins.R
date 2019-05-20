@@ -5,7 +5,7 @@
 #' @return shapes_routes_service - a dataframe in which routes, services, and shape_ids are all joined
 #' @keywords internal
 #' @importFrom dplyr %>% group_by filter
-#' @importFrom rlang !! .data :=
+#' @importFrom rlang !! .data
 shape_route_service <- function(gtfs_obj, 
                                 route_ids = NULL, 
                                 service_ids = NULL) {
@@ -62,7 +62,7 @@ shape_route_service <- function(gtfs_obj,
     shapes_routes_df <- gtfs_obj$trips %>%
       dplyr::filter(.data$service_id %in% service_ids) %>%
       dplyr::filter(.data$route_id %in% route_ids) %>%
-      dplyr::select_('shape_id', 'route_id', 'service_id') %>%
+      dplyr::select(shape_id, route_id, service_id) %>%
       dplyr::filter(!is.na(.data$shape_id)) %>%
       dplyr::distinct(.data$service_id, 
                       .data$shape_id, 
@@ -72,7 +72,7 @@ shape_route_service <- function(gtfs_obj,
   } else {
     shapes_routes_df <- gtfs_obj$trips %>%
       dplyr::slice(which(.data$route_id %in% route_ids)) %>%
-      dplyr::select_('shape_id', 'route_id', 'service_id') %>%
+      dplyr::select(shape_id, route_id, service_id) %>%
       dplyr::filter(!is.na(.data$shape_id)) %>%
       dplyr::distinct(.data$service_id, 
                       .data$shape_id, 
@@ -92,7 +92,7 @@ shape_route_service <- function(gtfs_obj,
 #' @param service_id the service for which to get stops 
 #' @return shapes for a route
 #' @importFrom dplyr %>% group_by filter
-#' @importFrom rlang !! .data :=
+#' @importFrom rlang !! .data
 #' @keywords internal
 shape_for_route <- function(g1, select_route_id, select_service_id) {
   some_trips <- g1$trips %>%

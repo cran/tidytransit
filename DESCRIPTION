@@ -2,10 +2,10 @@ Package: tidytransit
 Type: Package
 Title: Read, Validate, Analyze, and Map Files in the General Transit
         Feed Specification
-Version: 0.4.0
+Version: 0.5.0
 Authors@R: c(
-    person("Tom", "Buckley", role = c("aut", "cre"), email = "tom@tbuckl.com"),
     person("Flavio", "Poletti", role = c("aut"), email = "flavio.poletti@hotmail.ch"),
+    person("Tom", "Buckley", role = c("aut", "cre"), email = "tom@tbuckl.com"),
     person("Danton", "Noriega-Goodwin", role = c("aut"), email = "danton.noriega@gmail.com"),
     person("Mark", "Padgham", role = c("aut"), email = "mark.padgham@email.com"),
     person("Angela", "Li", role = c("ctb"), email = "angela@rladies.org"),
@@ -32,9 +32,9 @@ BugReports: https://github.com/r-transit/tidytransit
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2019-04-16 15:23:37 UTC; tbuck
-Author: Tom Buckley [aut, cre],
-  Flavio Poletti [aut],
+Packaged: 2019-05-20 03:08:57 UTC; tbuckley
+Author: Flavio Poletti [aut],
+  Tom Buckley [aut, cre],
   Danton Noriega-Goodwin [aut],
   Mark Padgham [aut],
   Angela Li [ctb],
@@ -48,4 +48,4 @@ Author: Tom Buckley [aut, cre],
   Kyle Walker [ctb]
 Maintainer: Tom Buckley <tom@tbuckl.com>
 Repository: CRAN
-Date/Publication: 2019-04-16 16:13:09 UTC
+Date/Publication: 2019-05-20 04:50:03 UTC
