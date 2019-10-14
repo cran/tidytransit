@@ -29,6 +29,10 @@ head(nyc$stops)
 names(nyc)
 
 ## ------------------------------------------------------------------------
+validation_result <- attr(nyc, "validation_result")
+head(validation_result)
+
+## ------------------------------------------------------------------------
 head(feedlist)
 
 ## ---- eval=FALSE---------------------------------------------------------
@@ -45,8 +49,4 @@ feedlist_sf <- st_as_sf(feedlist,
                         crs=4326)
 
 plot(feedlist_sf, max.plot = 1)
-
-## ------------------------------------------------------------------------
-validation_result <- attr(nyc, "validation_result")
-head(validation_result)
 
