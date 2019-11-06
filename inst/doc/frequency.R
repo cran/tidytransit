@@ -10,7 +10,7 @@ library(sf)
 
 ## ------------------------------------------------------------------------
 local_gtfs_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
-gtfs <- read_gtfs(local_gtfs_path, local=TRUE)
+gtfs <- read_gtfs(local_gtfs_path)
 # gtfs <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
 
 ## ------------------------------------------------------------------------
@@ -52,7 +52,7 @@ one_line_stops %>%
   tail()
 
 ## ------------------------------------------------------------------------
-nyc_stops_sf <- get_stop_geometry(gtfs$stops)
+nyc_stops_sf <- stops_as_sf(gtfs$stops)
 
 ## ------------------------------------------------------------------------
 one_line_stops_sf <- nyc_stops_sf %>%
@@ -72,14 +72,18 @@ am_route_freq <- get_route_frequency(gtfs, service_ids = service_ids, start_hour
 head(am_route_freq)
 
 ## ------------------------------------------------------------------------
-routes_sf <- get_route_geometry(gtfs, service_ids = service_ids)
+# get_route_geometry needs a gtfs object that includes shapes as simple feature data frames
+gtfs_sf <- gtfs_as_sf(gtfs)
+routes_sf <- get_route_geometry(gtfs_sf, service_ids = service_ids)
 
 ## ------------------------------------------------------------------------
 routes_sf <- routes_sf %>% 
-  right_join(am_route_freq, by = 'route_id')
+  inner_join(am_route_freq, by = 'route_id')
 
 ## ---- fig.width=6, fig.height=10, warn=FALSE-----------------------------
-routes_sf %>% 
+# convert to an appropriate coordinate reference system
+routes_sf_crs <- sf::st_transform(routes_sf, 26919) 
+routes_sf_crs %>% 
   filter(median_headways<10) %>%
   ggplot() + 
   geom_sf(aes(colour=as.factor(median_headways))) + 

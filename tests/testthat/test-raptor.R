@@ -1,7 +1,7 @@
 context("raptor travel time routing")
 
 local_gtfs_path <- system.file("extdata", "routing.zip", package = "tidytransit")
-g <- read_gtfs(local_gtfs_path, local=TRUE)
+g <- read_gtfs(local_gtfs_path)
 g <- set_hms_times(g)
 from_stop_ids <- c("stop1a", "stop1b")
 
@@ -18,14 +18,15 @@ test_that("travel times wrapper function", {
     from_stop_name = "One", 
     departure_time_range = 3600)
   expect_equal(nrow(tt), length(unique(g$stops$stop_name)))
-  expect_equal(tt[stop_name == "One", travel_time], 0)
-  expect_equal(tt[stop_name == "Two", travel_time], 4*60)
-  expect_equal(tt[stop_name == "Three", travel_time], (18-12)*60)
-  expect_equal(tt[stop_name == "Four", travel_time], (37-17)*60)
-  expect_equal(tt[stop_name == "Five", travel_time], (15-10)*60)
-  expect_equal(tt[stop_name == "Six", travel_time], (20-10)*60)
-  expect_equal(tt[stop_name == "Seven", travel_time], (25-10)*60)
-  expect_equal(tt[stop_name == "Eight", travel_time], (24-12)*60)
+  expect_equal(tt %>% dplyr::filter(stop_name == "One") %>% dplyr::pull(travel_time), 0)
+  expect_equal(tt$travel_time[which(tt$stop_name == "One")], 0)
+  expect_equal(tt$travel_time[which(tt$stop_name == "Two")], 4*60)
+  expect_equal(tt$travel_time[which(tt$stop_name == "Three")], (18-12)*60)
+  expect_equal(tt$travel_time[which(tt$stop_name == "Four")], (37-17)*60)
+  expect_equal(tt$travel_time[which(tt$stop_name == "Five")], (15-10)*60)
+  expect_equal(tt$travel_time[which(tt$stop_name == "Six")], (20-10)*60)
+  expect_equal(tt$travel_time[which(tt$stop_name == "Seven")], (25-10)*60)
+  expect_equal(tt$travel_time[which(tt$stop_name == "Eight")], (24-12)*60)
 })
 
 test_that("travel_time works with different params", {
@@ -53,19 +54,19 @@ test_that("raptor travel times", {
              keep = "shortest")
   actual = r[order(stop_id), travel_time]
   
-  expected = as.numeric(hms::parse_hms(c(
-    "stop1a" = "00:00:00",
-    "stop1b" = "00:00:00",
-    "stop2"  = "00:04:00",
-    "stop3a" = "00:06:10", # :18 - :12 + transfer
-    "stop3b" = "00:06:00", # :18 - :12
-    "stop4"  = "00:20:00", # :37 - :17
-    "stop5"  = "00:05:00", # :15 - :10
-    "stop6"  = "00:10:00", # :20 - :10
-    "stop7"  = "00:15:00", # :25 - :10
-    "stop8a" = "00:12:10", # :24 - :12 + transfer
-    "stop8b" = "00:12:00"  # :24 - :12
-  )))
+  expected = c(
+    0,          # stop1a 00:00:00
+    0,          # stop1b 00:00:00
+    04*60 + 00, # stop2  00:04:00 
+    06*60 + 10, # stop3a 00:06:10  :18 - :12 + transfer
+    06*60 + 00, # stop3b 00:06:00  :18 - :12
+    20*60 + 00, # stop4  00:20:00  :37 - :17
+    05*60 + 00, # stop5  00:05:00  :15 - :10
+    10*60 + 00, # stop6  00:10:00  :20 - :10
+    15*60 + 00, # stop7  00:15:00  :25 - :10
+    12*60 + 10, # stop8a 00:12:10  :24 - :12 + transfer
+    12*60 + 00  # stop8b 00:12:00  :24 - :12
+  )
   expect_equal(actual, expected)
 })
 
@@ -90,17 +91,17 @@ test_that("travel_time with one stop and reduced departure_time_range", {
              keep = "shortest")[order(stop_id)]
   actual <- r[order(stop_id), travel_time]
   
-  expected = as.numeric(hms::parse_hms(c(
-    "stop1a" = "00:00:00",
-    "stop3a" = "00:18:00",
-    "stop3b" = "00:18:10",
-    "stop4"  = "00:27:00",
-    "stop5"  = "00:05:00",
-    "stop6"  = "00:10:00",
-    "stop7"  = "00:15:00",
-    "stop8a" = "00:22:00",
-    "stop8b" = "00:22:10"
-  )))
+  expected = c(
+    00*60 + 00, # stop1a 00:00:00
+    18*60 + 00, # stop3a 00:18:00
+    18*60 + 10, # stop3b 00:18:10
+    27*60 + 00, # stop4  00:27:00
+    05*60 + 00, # stop5  00:05:00
+    10*60 + 00, # stop6  00:10:00
+    15*60 + 00, # stop7  00:15:00
+    22*60 + 00, # stop8a 00:22:00
+    22*60 + 10  # stop8b 00:22:10
+  )
   expect_equal(actual, expected)
 })
 
@@ -132,33 +133,33 @@ test_that("parameters are checked", {
 test_that("earliest arrival times", {
   r = raptor(stop_times, transfers, "stop2", keep = "earliest")
   actual = r[order(stop_id), min_arrival_time]
-  expected = as.numeric(hms::parse_hms(c(
-    "stop2"  = "07:05:00", # departure time
-    "stop3a" = "07:11:00",
-    "stop3b" = "07:11:10",
-    "stop4"  = "07:37:00",
-    "stop8a" = "07:24:10",
-    "stop8b" = "07:24:00"
-  )))
+  expected = c(
+    7*3600 + 05*60 + 00, # stop2  07:05:00 departure time
+    7*3600 + 11*60 + 00, # stop3a 07:11:00
+    7*3600 + 11*60 + 10, # stop3b 07:11:10
+    7*3600 + 37*60 + 00, # stop4  07:37:00
+    7*3600 + 24*60 + 10, # stop8a 07:24:10
+    7*3600 + 24*60 + 00  # stop8b 07:24:00
+  )
   expect_equal(actual, expected)
 })
 
 test_that("earliest arrival time without transfers", {
   r = raptor(stop_times, NULL, from_stop_ids, keep = "earliest")
   actual = r[order(stop_id), min_arrival_time]
-  expected = as.numeric(hms::parse_hm(c(
-    "stop1a" = "07:00",
-    "stop1b" = "07:12",
-    "stop2"  = "07:04",
-    "stop3a" = "07:11",
-    "stop3b" = "07:18",
-    "stop4"  = "07:37",
-    "stop5"  = "07:15",
-    "stop6"  = "07:20",
-    "stop7"  = "07:25",
-    "stop8a" = "07:32",
-    "stop8b" = "07:24"
-  )))
+  expected = c(
+    7*3600 + 00*60, # stop1a 07:00
+    7*3600 + 12*60, # stop1b 07:12
+    7*3600 + 04*60, # stop2  07:04
+    7*3600 + 11*60, # stop3a 07:11
+    7*3600 + 18*60, # stop3b 07:18
+    7*3600 + 37*60, # stop4  07:37
+    7*3600 + 15*60, # stop5  07:15
+    7*3600 + 20*60, # stop6  07:20
+    7*3600 + 25*60, # stop7  07:25
+    7*3600 + 32*60, # stop8a 07:32
+    7*3600 + 24*60  # stop8b 07:24
+  )
   expect_equal(actual, expected)
 })
 
@@ -176,7 +177,17 @@ test_that("transfers for travel_times", {
   tt = travel_times(
     filtered_stop_times = fst, 
     from_stop_name = "One", 
-    departure_time_range = 3600)
-  expect_equal(tt[order(stop_id)]$transfers, 
-    c(0, 0, 0, 1, 0, 0, 1, 0))
+    departure_time_range = 3600) %>% 
+    arrange(stop_id)
+  expect_equal(tt$transfers, 
+               c(0, 0, 0, 1, 0, 0, 1, 0))
+})
+
+test_that("travel_times return type", {
+  fst = filter_stop_times(g, "2018-10-01", 0, 24*3600)
+  expect_s3_class(travel_times(fst, "One", return_DT = TRUE), "data.frame")
+  expect_s3_class(travel_times(fst, "One", return_DT = FALSE), "data.frame")
+  expect_s3_class(travel_times(fst, "One"), "tbl_df")
+  expect_s3_class(travel_times(fst, "One", return_DT = FALSE), "tbl_df")
+  expect_s3_class(travel_times(fst, "One", return_DT = TRUE), "data.table")
 })

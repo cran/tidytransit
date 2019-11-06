@@ -6,7 +6,7 @@ library(ggplot2)
 
 ## ------------------------------------------------------------------------
 local_gtfs_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
-gtfs <- read_gtfs(local_gtfs_path, local=TRUE)
+gtfs <- read_gtfs(local_gtfs_path)
 # gtfs <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
 
 ## ------------------------------------------------------------------------
