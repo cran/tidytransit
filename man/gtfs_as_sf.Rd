@@ -2,7 +2,7 @@
 % Please edit documentation in R/spatial.R
 \name{gtfs_as_sf}
 \alias{gtfs_as_sf}
-\title{Convert stops and shapes to Simple Features}
+\title{Convert stops and shapes to Simple Features#'}
 \usage{
 gtfs_as_sf(gtfs_obj, skip_shapes = FALSE, quiet = TRUE)
 }

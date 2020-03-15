@@ -1,4 +1,4 @@
-#' Convert stops and shapes to Simple Features 
+#' Convert stops and shapes to Simple Features#' 
 #' 
 #' Stops are converted to POINT sf data frames. Shapes are created as
 #' LINESTRING data frame. Note that this function replaces stops and shapes
@@ -16,7 +16,7 @@ gtfs_as_sf <- function(gtfs_obj, skip_shapes = FALSE, quiet = TRUE) {
   if(feed_contains(gtfs_obj, "shapes") && !skip_shapes) {
     if(!quiet) message('Converting shapes to simple features')
     gtfs_obj$shapes <- try(shapes_as_sf(gtfs_obj$shapes))
-  } else { 
+  } else if(!skip_shapes) { 
     warning('No shapes available in gtfs_obj') 
   }
   
@@ -51,7 +51,7 @@ shapes_as_sf <- function(gtfs_shapes) {
   
   shape_linestrings <- sf::st_sfc(list_of_linestrings, crs = 4326)
   
-  shapes_sf <- sf::st_sf(shape_id = unique(gtfs_shapes$shape_id), geometry = shape_linestrings)
+  shapes_sf <- sf::st_sf(shape_id = names(list_of_line_tibbles), geometry = shape_linestrings)
   shapes_sf$shape_id <- as.character(shapes_sf$shape_id)
   
   return(shapes_sf)
