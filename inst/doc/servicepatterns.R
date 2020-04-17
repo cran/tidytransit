@@ -1,4 +1,4 @@
-## ----setup, include=FALSE------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
 library(knitr)
 library(tidytransit)
 library(dplyr)
@@ -6,17 +6,17 @@ library(lubridate)
 library(ggplot2)
 knitr::opts_chunk$set(echo = TRUE)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 local_gtfs_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
 gtfs <- read_gtfs(local_gtfs_path)
 # gtfs <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 gtfs <- set_date_service_table(gtfs)
 
 head(gtfs$.$date_service_table)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 holidays = tribble(~date, ~holiday,
   ymd("2018-07-04"), "Independence Day",
   ymd("2018-09-03"), "Labor Day")
@@ -33,27 +33,27 @@ calendar = tibble(date = unique(gtfs$.$date_service_table$date)) %>%
 calendar <- calendar %>% left_join(holidays, by = "date")
 head(calendar)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 gtfs <- set_servicepattern(gtfs)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 head(gtfs$.$service_pattern)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # service ids used
 n_services <-  length(unique(gtfs$trips$service_id)) # 70
 
 # unique date patterns 
 n_servicepatterns <- length(unique(gtfs$.$service_pattern$servicepattern_id)) # 7
 
-## ----fig.height=4, fig.width=7-------------------------------------------
+## ----fig.height=4, fig.width=7------------------------------------------------
 date_servicepattern_table <- gtfs$.$date_servicepattern_table %>% left_join(calendar, by = "date")
 
 ggplot(date_servicepattern_table) + theme_bw() + 
   geom_point(aes(x = date, y = servicepattern_id, color = weekday), size = 1) + 
   scale_x_date(breaks = scales::date_breaks("1 month")) + theme(legend.position = "bottom")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 suggest_servicepattern_name = function(dates, calendar) {
   servicepattern_calendar = tibble(date = dates) %>% left_join(calendar, by = "date")
   
@@ -114,7 +114,7 @@ suggest_servicepattern_name = function(dates, calendar) {
   return(pattern_name)
 }
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 servicepattern_names = gtfs$.$date_servicepattern_table %>% 
   group_by(servicepattern_id) %>% summarise(
     servicepattern_name = suggest_servicepattern_name(date, calendar)
@@ -122,7 +122,7 @@ servicepattern_names = gtfs$.$date_servicepattern_table %>%
 
 print(servicepattern_names)
 
-## ----fig.height=4, fig.width=7-------------------------------------------
+## ----fig.height=4, fig.width=7------------------------------------------------
 dates = gtfs$.$date_servicepattern_table
 dates$wday <- lubridate::wday(dates$date, label = T, abbr = T, week_start = 7)
 dates$week_nr <- lubridate::week(dates$date)
@@ -139,7 +139,7 @@ ggplot(dates) + theme_bw() +
   labs(x = NULL, y = "Date of Sundays") +
   facet_wrap(~servicepattern_id, nrow = 1)
 
-## ----fig.height=4, fig.width=7-------------------------------------------
+## ----fig.height=4, fig.width=7------------------------------------------------
 trips_servicepattern = left_join(select(gtfs$trips, trip_id, service_id), gtfs$.$service_pattern, by = "service_id")
 trip_dates = left_join(gtfs$.$date_servicepattern_table, trips_servicepattern, by = "servicepattern_id")
 

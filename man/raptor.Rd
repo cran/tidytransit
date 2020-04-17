@@ -4,8 +4,15 @@
 \alias{raptor}
 \title{Calculate travel times from one stop to all reachable stops}
 \usage{
-raptor(stop_times, transfers, stop_ids, arrival = FALSE,
-  time_range = 3600, max_transfers = NULL, keep = "all")
+raptor(
+  stop_times,
+  transfers,
+  stop_ids,
+  arrival = FALSE,
+  time_range = 3600,
+  max_transfers = NULL,
+  keep = "all"
+)
 }
 \arguments{
 \item{stop_times}{A (prepared) stop_times table from a gtfs feed. Prepared means
@@ -68,7 +75,7 @@ nyc <- read_gtfs(nyc_path)
 stop_ids_harlem_st <- c("301", "301N", "301S")
 stop_ids_155_st <- c("A11", "A11N", "A11S", "D12", "D12N", "D12S")
 walk_times <- data.frame(stop_id = c(stop_ids_harlem_st, stop_ids_155_st), 
-                         walk_time = c(rep(600, 3), rep(410, 6)), stringsAsFactors = F)
+                         walk_time = c(rep(600, 3), rep(410, 6)), stringsAsFactors = FALSE)
 
 # Use journeys departing after 7 AM with arrival time before 11 AM on 26th of June
 stop_times <- filter_stop_times(nyc, "2018-06-26", 7*3600, 9*3600)
@@ -78,10 +85,11 @@ rptr <- raptor(stop_times, nyc$transfers, walk_times$stop_id, time_range = 1800,
                keep = "all")
 
 # add walk times to travel times
-rptr <- left_join(rptr, walk_times, by=c("from_stop_id" = "stop_id"))
+rptr <- merge(rptr, walk_times, by.x = "from_stop_id", by.y = "stop_id")
 rptr$travel_time_incl_walk <- rptr$travel_time + rptr$walk_time
 
-# get minimal travel times (with walk times) for all stop_ids 
+# get minimal travel times (with walk times) for all stop_ids
+library(data.table)
 shortest_travel_times <- setDT(rptr)[order(travel_time_incl_walk)][, .SD[1], by = "to_stop_id"]
 hist(shortest_travel_times$travel_time, breaks = 360)
 }

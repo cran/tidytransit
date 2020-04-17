@@ -1,18 +1,18 @@
-## ----setup, include=FALSE------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 library(tidytransit)
 library(dplyr)
 library(ggplot2)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 local_gtfs_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
 gtfs <- read_gtfs(local_gtfs_path)
 # gtfs <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 gtfs <- gtfs %>% set_hms_times()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # get the id of the first stop in the trip's stop sequence
 first_stop_id <- gtfs$stop_times %>% 
   group_by(trip_id) %>% 
@@ -27,12 +27,12 @@ trip_origins <- first_stop_names %>% select(trip_id, trip_origin = stop_name)
 # join the trip origins back onto the trips
 gtfs$trips <- left_join(gtfs$trips, trip_origins, by = "trip_id")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 gtfs$trips %>%
   select(route_id, trip_origin) %>%
   head()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 if(!exists("trip_headsign", where = gtfs$trips)) {
   # get the last id of the trip's stop sequence
   trip_headsigns <- gtfs$stop_times %>% 
@@ -44,12 +44,12 @@ if(!exists("trip_headsign", where = gtfs$trips)) {
   gtfs$trips <- left_join(gtfs$trips, trip_headsigns, by = "trip_id")
 }
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 stop_ids <- gtfs$stops %>% 
   filter(stop_name == "Times Sq - 42 St") %>% 
   select(stop_id)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 departures <- stop_ids %>% 
   inner_join(gtfs$stop_times %>% 
                select(trip_id, arrival_time_hms, 
@@ -63,14 +63,14 @@ departures <- departures %>%
                      trip_origin), 
             by = "trip_id") 
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 departures <- departures %>% 
   left_join(gtfs$routes %>% 
               select(route_id, 
                      route_short_name), 
             by = "route_id")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 departures %>% 
   select(arrival_time_hms,
          departure_time_hms,
@@ -79,22 +79,22 @@ departures %>%
   head() %>%
   knitr::kable()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 gtfs <- gtfs %>% 
   set_hms_times() %>% 
   set_date_service_table()
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 head(gtfs$.$date_service_table)
 
-## ----fig.width=8, fig.height=12------------------------------------------
+## ----fig.width=8, fig.height=12-----------------------------------------------
 services_on_180823 <- gtfs$.$date_service_table %>% 
   filter(date == "2018-08-23") %>% select(service_id)
 
 departures_180823 <- departures %>% 
   inner_join(services_on_180823, by = "service_id")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 departures_180823 %>%
   arrange(departure_time_hms, stop_id, route_short_name) %>% 
   select(departure_time_hms, stop_id, route_short_name, trip_headsign) %>% 
@@ -102,7 +102,7 @@ departures_180823 %>%
   filter(departure_time_hms < hms::hms(hours = 7, minutes = 10)) %>% 
   knitr::kable()
 
-## ----fig.width=8, fig.height=6-------------------------------------------
+## ----fig.width=8, fig.height=6------------------------------------------------
 route_colors <- gtfs$routes %>% select(route_id, route_short_name, route_color)
 route_colors$route_color[which(is.na(route_colors$route_color))] <- "454545"
 route_colors <- setNames(paste0("#", route_colors$route_color), route_colors$route_short_name)
@@ -115,7 +115,7 @@ ggplot(departures_180823) + theme_bw() +
   scale_color_manual(values = route_colors) +
   labs(title = "Departures from Times Square on 08/23/18")
 
-## ----fig.width=6, fig.height=6-------------------------------------------
+## ----fig.width=6, fig.height=6------------------------------------------------
 departures_180823_sub_7to8 <- departures_180823 %>% 
   filter(stop_id %in% c("127N", "127S")) %>% 
   filter(departure_time_hms >= hms::hms(hours = 7) & departure_time_hms <= hms::hms(hour = 8))
