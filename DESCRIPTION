@@ -2,7 +2,7 @@ Package: tidytransit
 Type: Package
 Title: Read, Validate, Analyze, and Map Files in the General Transit
         Feed Specification
-Version: 0.7.1
+Version: 0.7.2
 Authors@R: c(
     person("Flavio", "Poletti", role = c("aut"), email = "flavio.poletti@hotmail.ch"),
     person("Tom", "Buckley", role = c("aut", "cre"), email = "tom@tbuckl.com"),
@@ -28,13 +28,13 @@ Imports: dplyr, zip (>= 2.0.1), tibble, readr, data.table (>= 1.12.8),
         httr, assertthat, rlang, sf, lubridate, hms, tidyr, tools,
         digest
 Suggests: testthat, knitr, rmarkdown, ggplot2, scales
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 URL: https://github.com/r-transit/tidytransit
 BugReports: https://github.com/r-transit/tidytransit
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2020-04-15 03:08:04 UTC; tbuck
+Packaged: 2020-12-04 13:09:06 UTC; tbuck
 Author: Flavio Poletti [aut],
   Tom Buckley [aut, cre],
   Danton Noriega-Goodwin [aut],
@@ -52,4 +52,4 @@ Author: Flavio Poletti [aut],
   Kyle Walker [ctb]
 Maintainer: Tom Buckley <tom@tbuckl.com>
 Repository: CRAN
-Date/Publication: 2020-04-17 13:30:02 UTC
+Date/Publication: 2020-12-04 13:50:02 UTC
