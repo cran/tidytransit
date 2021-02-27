@@ -12,7 +12,7 @@
 
 <meta name="author" content="Tom Buckley" />
 
-<meta name="date" content="2020-12-04" />
+<meta name="date" content="2021-02-27" />
 
 <title>Transit (GTFS) Service &amp; Headway Mapping with R</title>
 
@@ -303,7 +303,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Transit (GTFS) Service &amp; Headway Mapping with R</h1>
 <h4 class="author">Tom Buckley</h4>
-<h4 class="date">2020-12-04</h4>
+<h4 class="date">2021-02-27</h4>
 
 
 
@@ -358,14 +358,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb5-9" data-line-number="9">                                    <span class="dt">na.rm=</span><span class="ot">TRUE</span>)<span class="op">/</span><span class="fl">1e3</span>,</a>
 <a class="sourceLine" id="cb5-10" data-line-number="10">            <span class="dt">route_avg_distance_km =</span> (<span class="kw">sum</span>(<span class="kw">as.numeric</span>(length),</a>
 <a class="sourceLine" id="cb5-11" data-line-number="11">                                    <span class="dt">na.rm=</span><span class="ot">TRUE</span>)<span class="op">/</span><span class="fl">1e3</span>)<span class="op">/</span>(trips<span class="op">*</span>routes),</a>
-<a class="sourceLine" id="cb5-12" data-line-number="12">            <span class="dt">stops=</span>(<span class="kw">n_distinct</span>(stop_id)<span class="op">/</span><span class="dv">2</span>))</a>
-<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span></a></code></pre></div>
+<a class="sourceLine" id="cb5-12" data-line-number="12">            <span class="dt">stops=</span>(<span class="kw">n_distinct</span>(stop_id)<span class="op">/</span><span class="dv">2</span>))</a></code></pre></div>
 <p>We can also add the number of days that each service is in operation.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">service_pattern_summary &lt;-<span class="st"> </span>gtfs<span class="op">$</span>.<span class="op">$</span>date_servicepattern_table <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="st">  </span><span class="kw">group_by</span>(servicepattern_id) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb6-3" data-line-number="3"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">days_in_service =</span> <span class="kw">n</span>()) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">  </span><span class="kw">left_join</span>(service_pattern_summary, <span class="dt">by=</span><span class="st">&quot;servicepattern_id&quot;</span>)</a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt; `summarise()` ungrouping output (override with `.groups` argument)</span></a></code></pre></div>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">  </span><span class="kw">left_join</span>(service_pattern_summary, <span class="dt">by=</span><span class="st">&quot;servicepattern_id&quot;</span>)</a></code></pre></div>
 <p>And then we’ll print the summary.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">knitr<span class="op">::</span><span class="kw">kable</span>(service_pattern_summary)</a></code></pre></div>
 <table>
@@ -498,7 +496,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb9-4" data-line-number="4"><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">count =</span> <span class="kw">n</span>()) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb9-5" data-line-number="5"><span class="st">  </span><span class="kw">head</span>() <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb9-6" data-line-number="6"><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</a>
-<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="co">#&gt; `summarise()` regrouping output by 'service_id' (override with `.groups` argument)</span></a></code></pre></div>
+<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="co">#&gt; `summarise()` has grouped output by 'service_id'. You can override using the `.groups` argument.</span></a></code></pre></div>
 <table>
 <thead>
 <tr class="header">

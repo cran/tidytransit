@@ -2,12 +2,13 @@ Package: tidytransit
 Type: Package
 Title: Read, Validate, Analyze, and Map Files in the General Transit
         Feed Specification
-Version: 0.7.2
+Version: 0.7.3
 Authors@R: c(
     person("Flavio", "Poletti", role = c("aut"), email = "flavio.poletti@hotmail.ch"),
+    person(given = "Daniel",family = "Herszenhut",role = c("aut"),email = "dhersz@gmail.com",comment = c(ORCID = "0000-0001-8066-1105")),
+    person("Mark", "Padgham", role = c("aut"), email = "mark.padgham@email.com"),
     person("Tom", "Buckley", role = c("aut", "cre"), email = "tom@tbuckl.com"),
     person("Danton", "Noriega-Goodwin", role = c("aut"), email = "danton.noriega@gmail.com"),
-    person("Mark", "Padgham", role = c("aut"), email = "mark.padgham@email.com"),
     person("Angela", "Li", role = c("ctb"), email = "angela@rladies.org"),
     person("Elaine", "McVey", role = c("ctb"), email = "elaine.mcvey@transloc.com"),
     person("Charles Hans", "Thompson", role = c("ctb"), email = "hans.thompson1@gmail.com"),
@@ -26,7 +27,7 @@ LazyData: TRUE
 Depends: R (>= 3.6.0)
 Imports: dplyr, zip (>= 2.0.1), tibble, readr, data.table (>= 1.12.8),
         httr, assertthat, rlang, sf, lubridate, hms, tidyr, tools,
-        digest
+        digest, checkmate
 Suggests: testthat, knitr, rmarkdown, ggplot2, scales
 RoxygenNote: 7.1.1
 URL: https://github.com/r-transit/tidytransit
@@ -34,11 +35,12 @@ BugReports: https://github.com/r-transit/tidytransit
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2020-12-04 13:09:06 UTC; tbuck
+Packaged: 2021-02-27 19:49:59 UTC; tbuck
 Author: Flavio Poletti [aut],
+  Daniel Herszenhut [aut] (<https://orcid.org/0000-0001-8066-1105>),
+  Mark Padgham [aut],
   Tom Buckley [aut, cre],
   Danton Noriega-Goodwin [aut],
-  Mark Padgham [aut],
   Angela Li [ctb],
   Elaine McVey [ctb],
   Charles Hans Thompson [ctb],
@@ -52,4 +54,4 @@ Author: Flavio Poletti [aut],
   Kyle Walker [ctb]
 Maintainer: Tom Buckley <tom@tbuckl.com>
 Repository: CRAN
-Date/Publication: 2020-12-04 13:50:02 UTC
+Date/Publication: 2021-02-28 00:00:02 UTC
