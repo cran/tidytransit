@@ -316,10 +316,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">local_gtfs_path &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;google_transit_nyc_subway.zip&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;tidytransit&quot;</span>)</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2">gtfs &lt;-<span class="st"> </span><span class="kw">read_gtfs</span>(local_gtfs_path)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co"># gtfs &lt;- read_gtfs(&quot;http://web.mta.info/developers/data/nyct/subway/google_transit.zip&quot;)</span></a></code></pre></div>
-<p>With <code>set_date_service_table()</code> we add a table to the feed that indicates which <code>service_id</code> runs on which date. This is later useful for linking dates and trips via <code>service_id</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">gtfs &lt;-<span class="st"> </span><span class="kw">set_date_service_table</span>(gtfs)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">head</span>(gtfs<span class="op">$</span>.<span class="op">$</span>date_service_table)</a></code></pre></div>
+<p>Tidytransit provides a <code>dates_services</code> (stored in the list <code>.</code>) that indicates which <code>service_id</code> runs on which date. This is later useful for linking dates and trips via <code>service_id</code>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">head</span>(gtfs<span class="op">$</span>.<span class="op">$</span>dates_services)</a></code></pre></div>
 <pre><code>## # A tibble: 6 x 2
 ##   date       service_id             
 ##   &lt;date&gt;     &lt;chr&gt;                  
@@ -334,7 +332,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb4-2" data-line-number="2">  <span class="kw">ymd</span>(<span class="st">&quot;2018-07-04&quot;</span>), <span class="st">&quot;Independence Day&quot;</span>,</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3">  <span class="kw">ymd</span>(<span class="st">&quot;2018-09-03&quot;</span>), <span class="st">&quot;Labor Day&quot;</span>)</a>
 <a class="sourceLine" id="cb4-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">calendar =<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">date =</span> <span class="kw">unique</span>(gtfs<span class="op">$</span>.<span class="op">$</span>date_service_table<span class="op">$</span>date)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">calendar =<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">date =</span> <span class="kw">unique</span>(gtfs<span class="op">$</span>.<span class="op">$</span>dates_services<span class="op">$</span>date)) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb4-6" data-line-number="6"><span class="st">  </span><span class="kw">mutate</span>(</a>
 <a class="sourceLine" id="cb4-7" data-line-number="7">    <span class="dt">weekday =</span> (<span class="cf">function</span>(date) {</a>
 <a class="sourceLine" id="cb4-8" data-line-number="8">      <span class="kw">c</span>(<span class="st">&quot;Sunday&quot;</span>, <span class="st">&quot;Monday&quot;</span>, <span class="st">&quot;Tuesday&quot;</span>, </a>
@@ -356,8 +354,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## 6 2018-06-29 Friday    &lt;NA&gt;</code></pre>
 <p>To analyse on which dates trips run and to group similar services we use service patterns. Such a pattern simply lists all dates a trip runs on. For example, a trip with a pattern like <em>2019-03-07, 2019-03-14, 2019-03-21, 2019-03-28</em> runs every Thursday in March 2019. To handle these patterns we create a <code>servicepattern_id</code> using a hash function. Ideally there are the same number of servicepattern_ids and service_ids. However, in real life feeds this is rarely the case. In addition, the usability of service patterns depends largely on the feed and its complexity.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">gtfs &lt;-<span class="st"> </span><span class="kw">set_servicepattern</span>(gtfs)</a></code></pre></div>
-<p>Our gtfs feed now contains the data frame <code>service_pattern</code> which links each <code>servicepattern_id</code> to an existing <code>service_id</code> (and by extension <code>trip_id</code>).</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">head</span>(gtfs<span class="op">$</span>.<span class="op">$</span>service_pattern)</a></code></pre></div>
+<p>Our gtfs feed now contains the data frame <code>servicepatterns</code> which links each <code>servicepattern_id</code> to an existing <code>service_id</code> (and by extension <code>trip_id</code>).</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">head</span>(gtfs<span class="op">$</span>.<span class="op">$</span>servicepatterns)</a></code></pre></div>
 <pre><code>## # A tibble: 6 x 2
 ##   service_id                servicepattern_id
 ##   &lt;chr&gt;                     &lt;chr&gt;            
@@ -367,12 +365,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## 4 ASP18GEN-2042-Saturday-00 s_c578d4a        
 ## 5 ASP18GEN-2048-Sunday-00   s_a4c6b26        
 ## 6 ASP18GEN-2097-Weekday-00  s_e25d6ca</code></pre>
-<p>In addition, <code>gtfs$.$date_servicepattern_table</code> has been created which connects dates and service patterns (like <code>date_service_table</code>). We can compare the number of service patterns to the number of services.</p>
+<p>In addition, <code>gtfs$.$dates_servicepatterns</code> has been created which connects dates and service patterns (like <code>dates_services</code>). We can compare the number of service patterns to the number of services.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co"># service ids used</span></a>
 <a class="sourceLine" id="cb9-2" data-line-number="2">n_services &lt;-<span class="st">  </span><span class="kw">length</span>(<span class="kw">unique</span>(gtfs<span class="op">$</span>trips<span class="op">$</span>service_id)) <span class="co"># 70</span></a>
 <a class="sourceLine" id="cb9-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co"># unique date patterns </span></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">n_servicepatterns &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(gtfs<span class="op">$</span>.<span class="op">$</span>service_pattern<span class="op">$</span>servicepattern_id)) <span class="co"># 7</span></a></code></pre></div>
+<a class="sourceLine" id="cb9-5" data-line-number="5">n_servicepatterns &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(gtfs<span class="op">$</span>.<span class="op">$</span>servicepatterns<span class="op">$</span>servicepattern_id)) <span class="co"># 7</span></a></code></pre></div>
 <p>The feed uses 70 service_ids but there are actually only 7 different date patterns. Other feeds might not have such low numbers, for example the <a href="https://opentransportdata.swiss/dataset/timetable-2019-gtfs">Swiss GTFS feed</a> uses around 15’600 service_ids which all identify unique date patterns.</p>
 </div>
 <div id="analyse-data" class="section level2">
@@ -380,7 +378,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="exploration-plot" class="section level3">
 <h3>Exploration Plot</h3>
 <p>We’ll now try to figure out usable names for those patterns. A good way to start is visualising the data.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">date_servicepattern_table &lt;-<span class="st"> </span>gtfs<span class="op">$</span>.<span class="op">$</span>date_servicepattern_table <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(calendar, <span class="dt">by =</span> <span class="st">&quot;date&quot;</span>)</a>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">date_servicepattern_table &lt;-<span class="st"> </span>gtfs<span class="op">$</span>.<span class="op">$</span>dates_servicepatterns <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(calendar, <span class="dt">by =</span> <span class="st">&quot;date&quot;</span>)</a>
 <a class="sourceLine" id="cb10-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb10-3" data-line-number="3"><span class="kw">ggplot</span>(date_servicepattern_table) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb10-4" data-line-number="4"><span class="st">  </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> date, <span class="dt">y =</span> servicepattern_id, <span class="dt">color =</span> weekday), <span class="dt">size =</span> <span class="dv">1</span>) <span class="op">+</span><span class="st"> </span></a>
@@ -451,7 +449,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb11-58" data-line-number="58">  <span class="kw">return</span>(pattern_name)</a>
 <a class="sourceLine" id="cb11-59" data-line-number="59">}</a></code></pre></div>
 <p>We’ll apply this function to our service patterns and create a table with ids and names.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">servicepattern_names =<span class="st"> </span>gtfs<span class="op">$</span>.<span class="op">$</span>date_servicepattern_table <span class="op">%&gt;%</span><span class="st"> </span></a>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">servicepattern_names =<span class="st"> </span>gtfs<span class="op">$</span>.<span class="op">$</span>dates_servicepatterns <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb12-2" data-line-number="2"><span class="st">  </span><span class="kw">group_by</span>(servicepattern_id) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(</a>
 <a class="sourceLine" id="cb12-3" data-line-number="3">    <span class="dt">servicepattern_name =</span> <span class="kw">suggest_servicepattern_name</span>(date, calendar)</a>
 <a class="sourceLine" id="cb12-4" data-line-number="4">  )</a>
@@ -473,8 +471,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>Visualise services</h2>
 <div id="plot-calendar-for-each-service-pattern" class="section level3">
 <h3>Plot calendar for each service pattern</h3>
-<p>We can plot the service pattern like a calendar to visualise the different patterns. The original services can be plotted similarly (given it’s not too many) by using <code>date_service_table</code> and <code>service_id</code>.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">dates =<span class="st"> </span>gtfs<span class="op">$</span>.<span class="op">$</span>date_servicepattern_table</a>
+<p>We can plot the service pattern like a calendar to visualise the different patterns. The original services can be plotted similarly (given it’s not too many) by using <code>dates_services</code> and <code>service_id</code>.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">dates =<span class="st"> </span>gtfs<span class="op">$</span>.<span class="op">$</span>dates_servicepatterns</a>
 <a class="sourceLine" id="cb14-2" data-line-number="2">dates<span class="op">$</span>wday &lt;-<span class="st"> </span>lubridate<span class="op">::</span><span class="kw">wday</span>(dates<span class="op">$</span>date, <span class="dt">label =</span> T, <span class="dt">abbr =</span> T, <span class="dt">week_start =</span> <span class="dv">7</span>)</a>
 <a class="sourceLine" id="cb14-3" data-line-number="3">dates<span class="op">$</span>week_nr &lt;-<span class="st"> </span>lubridate<span class="op">::</span><span class="kw">week</span>(dates<span class="op">$</span>date)</a>
 <a class="sourceLine" id="cb14-4" data-line-number="4"></a>
@@ -494,8 +492,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="plot-number-of-trips-per-day-as-calendar" class="section level3">
 <h3>Plot number of trips per day as calendar</h3>
 <p>We can plot the number of trips for each day as a calendar heat map.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">trips_servicepattern =<span class="st"> </span><span class="kw">left_join</span>(<span class="kw">select</span>(gtfs<span class="op">$</span>trips, trip_id, service_id), gtfs<span class="op">$</span>.<span class="op">$</span>service_pattern, <span class="dt">by =</span> <span class="st">&quot;service_id&quot;</span>)</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2">trip_dates =<span class="st"> </span><span class="kw">left_join</span>(gtfs<span class="op">$</span>.<span class="op">$</span>date_servicepattern_table, trips_servicepattern, <span class="dt">by =</span> <span class="st">&quot;servicepattern_id&quot;</span>)</a>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">trips_servicepattern =<span class="st"> </span><span class="kw">left_join</span>(<span class="kw">select</span>(gtfs<span class="op">$</span>trips, trip_id, service_id), gtfs<span class="op">$</span>.<span class="op">$</span>servicepatterns, <span class="dt">by =</span> <span class="st">&quot;service_id&quot;</span>)</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">trip_dates =<span class="st"> </span><span class="kw">left_join</span>(gtfs<span class="op">$</span>.<span class="op">$</span>dates_servicepatterns, trips_servicepattern, <span class="dt">by =</span> <span class="st">&quot;servicepattern_id&quot;</span>)</a>
 <a class="sourceLine" id="cb15-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb15-4" data-line-number="4">trip_dates_count =<span class="st"> </span>trip_dates <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(date) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">count =</span> dplyr<span class="op">::</span><span class="kw">n</span>()) </a>
 <a class="sourceLine" id="cb15-5" data-line-number="5">trip_dates_count<span class="op">$</span>weekday &lt;-<span class="st"> </span>lubridate<span class="op">::</span><span class="kw">wday</span>(trip_dates_count<span class="op">$</span>date, <span class="dt">label =</span> T, <span class="dt">abbr =</span> T, <span class="dt">week_start =</span> <span class="dv">7</span>)</a>

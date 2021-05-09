@@ -10,9 +10,6 @@ gtfs <- read_gtfs(local_gtfs_path)
 # gtfs <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
 
 ## -----------------------------------------------------------------------------
-gtfs <- gtfs %>% set_hms_times()
-
-## -----------------------------------------------------------------------------
 # get the id of the first stop in the trip's stop sequence
 first_stop_id <- gtfs$stop_times %>% 
   group_by(trip_id) %>% 
@@ -52,8 +49,8 @@ stop_ids <- gtfs$stops %>%
 ## -----------------------------------------------------------------------------
 departures <- stop_ids %>% 
   inner_join(gtfs$stop_times %>% 
-               select(trip_id, arrival_time_hms, 
-                      departure_time_hms, stop_id), 
+               select(trip_id, arrival_time, 
+                      departure_time, stop_id), 
              by = "stop_id")
 
 departures <- departures %>% 
@@ -72,23 +69,18 @@ departures <- departures %>%
 
 ## -----------------------------------------------------------------------------
 departures %>% 
-  select(arrival_time_hms,
-         departure_time_hms,
+  select(arrival_time,
+         departure_time,
          trip_headsign,trip_origin,
          route_id) %>%
   head() %>%
   knitr::kable()
 
 ## -----------------------------------------------------------------------------
-gtfs <- gtfs %>% 
-  set_hms_times() %>% 
-  set_date_service_table()
-
-## -----------------------------------------------------------------------------
-head(gtfs$.$date_service_table)
+head(gtfs$.$dates_services)
 
 ## ----fig.width=8, fig.height=12-----------------------------------------------
-services_on_180823 <- gtfs$.$date_service_table %>% 
+services_on_180823 <- gtfs$.$dates_services %>% 
   filter(date == "2018-08-23") %>% select(service_id)
 
 departures_180823 <- departures %>% 
@@ -96,10 +88,10 @@ departures_180823 <- departures %>%
 
 ## -----------------------------------------------------------------------------
 departures_180823 %>%
-  arrange(departure_time_hms, stop_id, route_short_name) %>% 
-  select(departure_time_hms, stop_id, route_short_name, trip_headsign) %>% 
-  filter(departure_time_hms >= hms::hms(hours = 7)) %>% 
-  filter(departure_time_hms < hms::hms(hours = 7, minutes = 10)) %>% 
+  arrange(departure_time, stop_id, route_short_name) %>% 
+  select(departure_time, stop_id, route_short_name, trip_headsign) %>% 
+  filter(departure_time >= hms::hms(hours = 7)) %>% 
+  filter(departure_time < hms::hms(hours = 7, minutes = 10)) %>% 
   knitr::kable()
 
 ## ----fig.width=8, fig.height=6------------------------------------------------
@@ -108,8 +100,8 @@ route_colors$route_color[which(is.na(route_colors$route_color))] <- "454545"
 route_colors <- setNames(paste0("#", route_colors$route_color), route_colors$route_short_name)
 
 ggplot(departures_180823) + theme_bw() +
-  geom_point(aes(y=trip_headsign, x=departure_time_hms, color = route_short_name), size = 0.2) +
-  scale_x_time(breaks = seq(0, max(as.numeric(departures$departure_time_hms)), 3600), labels = scales::time_format("%H:%M")) +
+  geom_point(aes(y=trip_headsign, x=departure_time, color = route_short_name), size = 0.2) +
+  scale_x_time(breaks = seq(0, max(as.numeric(departures$departure_time)), 3600), labels = scales::time_format("%H:%M")) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   theme(legend.position = "bottom") +
   scale_color_manual(values = route_colors) +
@@ -118,10 +110,10 @@ ggplot(departures_180823) + theme_bw() +
 ## ----fig.width=6, fig.height=6------------------------------------------------
 departures_180823_sub_7to8 <- departures_180823 %>% 
   filter(stop_id %in% c("127N", "127S")) %>% 
-  filter(departure_time_hms >= hms::hms(hours = 7) & departure_time_hms <= hms::hms(hour = 8))
+  filter(departure_time >= hms::hms(hours = 7) & departure_time <= hms::hms(hour = 8))
 
 ggplot(departures_180823_sub_7to8) + theme_bw() +
-  geom_point(aes(y=trip_headsign, x=departure_time_hms, color = route_short_name), size = 1) +
+  geom_point(aes(y=trip_headsign, x=departure_time, color = route_short_name), size = 1) +
   scale_x_time(breaks = seq(7*3600, 9*3600, 300), labels = scales::time_format("%H:%M")) +
   scale_y_discrete(drop = F) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +

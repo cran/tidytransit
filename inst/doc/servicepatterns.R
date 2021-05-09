@@ -12,16 +12,14 @@ gtfs <- read_gtfs(local_gtfs_path)
 # gtfs <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
 
 ## -----------------------------------------------------------------------------
-gtfs <- set_date_service_table(gtfs)
-
-head(gtfs$.$date_service_table)
+head(gtfs$.$dates_services)
 
 ## -----------------------------------------------------------------------------
 holidays = tribble(~date, ~holiday,
   ymd("2018-07-04"), "Independence Day",
   ymd("2018-09-03"), "Labor Day")
 
-calendar = tibble(date = unique(gtfs$.$date_service_table$date)) %>% 
+calendar = tibble(date = unique(gtfs$.$dates_services$date)) %>% 
   mutate(
     weekday = (function(date) {
       c("Sunday", "Monday", "Tuesday", 
@@ -37,17 +35,17 @@ head(calendar)
 gtfs <- set_servicepattern(gtfs)
 
 ## -----------------------------------------------------------------------------
-head(gtfs$.$service_pattern)
+head(gtfs$.$servicepatterns)
 
 ## -----------------------------------------------------------------------------
 # service ids used
 n_services <-  length(unique(gtfs$trips$service_id)) # 70
 
 # unique date patterns 
-n_servicepatterns <- length(unique(gtfs$.$service_pattern$servicepattern_id)) # 7
+n_servicepatterns <- length(unique(gtfs$.$servicepatterns$servicepattern_id)) # 7
 
 ## ----fig.height=4, fig.width=7------------------------------------------------
-date_servicepattern_table <- gtfs$.$date_servicepattern_table %>% left_join(calendar, by = "date")
+date_servicepattern_table <- gtfs$.$dates_servicepatterns %>% left_join(calendar, by = "date")
 
 ggplot(date_servicepattern_table) + theme_bw() + 
   geom_point(aes(x = date, y = servicepattern_id, color = weekday), size = 1) + 
@@ -115,7 +113,7 @@ suggest_servicepattern_name = function(dates, calendar) {
 }
 
 ## -----------------------------------------------------------------------------
-servicepattern_names = gtfs$.$date_servicepattern_table %>% 
+servicepattern_names = gtfs$.$dates_servicepatterns %>% 
   group_by(servicepattern_id) %>% summarise(
     servicepattern_name = suggest_servicepattern_name(date, calendar)
   )
@@ -123,7 +121,7 @@ servicepattern_names = gtfs$.$date_servicepattern_table %>%
 print(servicepattern_names)
 
 ## ----fig.height=4, fig.width=7------------------------------------------------
-dates = gtfs$.$date_servicepattern_table
+dates = gtfs$.$dates_servicepatterns
 dates$wday <- lubridate::wday(dates$date, label = T, abbr = T, week_start = 7)
 dates$week_nr <- lubridate::week(dates$date)
 
@@ -140,8 +138,8 @@ ggplot(dates) + theme_bw() +
   facet_wrap(~servicepattern_id, nrow = 1)
 
 ## ----fig.height=4, fig.width=7------------------------------------------------
-trips_servicepattern = left_join(select(gtfs$trips, trip_id, service_id), gtfs$.$service_pattern, by = "service_id")
-trip_dates = left_join(gtfs$.$date_servicepattern_table, trips_servicepattern, by = "servicepattern_id")
+trips_servicepattern = left_join(select(gtfs$trips, trip_id, service_id), gtfs$.$servicepatterns, by = "service_id")
+trip_dates = left_join(gtfs$.$dates_servicepatterns, trips_servicepattern, by = "servicepattern_id")
 
 trip_dates_count = trip_dates %>% group_by(date) %>% summarise(count = dplyr::n()) 
 trip_dates_count$weekday <- lubridate::wday(trip_dates_count$date, label = T, abbr = T, week_start = 7)
