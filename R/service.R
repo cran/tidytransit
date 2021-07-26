@@ -17,19 +17,6 @@ service_by_dow <- function(calendar,
   return(calendar$service_id)
 }
 
-#' Summarise the number of trips per service
-#' 
-#' @param trips trips data frame
-#' @return count of service by id
-#' @export
-#' @keywords internal
-count_service_trips <- function(trips) {
-  trips %>%
-    dplyr::group_by(.data$service_id) %>% 
-      dplyr::mutate(service_trips = dplyr::n()) %>%
-        tibble::as_tibble()
-}
-
 #' Calculate servicepattern ids for a gtfs feed
 #' 
 #' Each trip has a defined number of dates it runs on. This set of dates is called a 
@@ -41,8 +28,9 @@ count_service_trips <- function(trips) {
 #' @param id_prefix all servicepattern id will start with this string
 #' @param hash_algo hashing algorithm used by digest
 #' @param hash_length length the hash should be cut to with substr(). Use -1 if the full hash should be used
-#' @return modified gtfs_obj with added servicepattern list and a table linking trips and pattern (trip_servicepatterns)
-#' @keywords internal
+#' @return modified gtfs_obj with added servicepattern list and a table linking 
+#'         trips and pattern (trip_servicepatterns)
+#' 
 #' @importFrom dplyr group_by summarise ungroup left_join
 #' @importFrom digest digest
 #' @importFrom rlang .data

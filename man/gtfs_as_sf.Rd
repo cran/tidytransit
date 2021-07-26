@@ -17,10 +17,13 @@ lon/lat coordinates of stops and shapes}
 \item{quiet}{boolean whether to print status messages}
 }
 \value{
-gtfs_obj a tidytransit gtfs object with stops and shapes as sf data frames
+tidygtfs object with stops and shapes as sf dataframes
 }
 \description{
 Stops are converted to POINT sf data frames. Shapes are created as
 LINESTRING data frame. Note that this function replaces stops and shapes
 tables in gtfs_obj.
+}
+\seealso{
+\code{\link{sf_as_tbl}}
 }
