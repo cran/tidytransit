@@ -24,7 +24,7 @@
 #' @importFrom gtfsio import_gtfs new_gtfs
 #' @export
 read_gtfs <- function(path, files = NULL, quiet = TRUE) {
-  g = gtfsio::import_gtfs(path, files = NULL, quiet = quiet)
+  g = gtfsio::import_gtfs(path, files = files, quiet = quiet)
   
   # validate
   validation_result <- validate_gtfs(g)
@@ -54,7 +54,6 @@ read_gtfs <- function(path, files = NULL, quiet = TRUE) {
 #'               Files within the directory will be overwritten.
 #' @return Invisibly returns gtfs_obj
 #' 
-#' @importFrom zip zipr
 #' @importFrom gtfsio export_gtfs
 #' @export
 write_gtfs <- function(gtfs_obj, zipfile, compression_level = 9, as_dir = FALSE) {
