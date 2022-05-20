@@ -1,4 +1,4 @@
-0f134dbb0cbbbf2a3f8ea6012c82af47 *DESCRIPTION
+46fe5407f167b0ad1640c0339bfc9792 *DESCRIPTION
 25782da43fcd4da47150f398521c12f1 *NAMESPACE
 c54cc214823b7ed26849c39389c9116e *R/data.R
 87da86fa84d7c0cae5fd7428acca0ebc *R/filters.R
@@ -7,7 +7,7 @@ a8e277913655bb5e6fee5982378efd5f *R/geo.R
 bb88210f02a9f17e579b7a9d6d91efd5 *R/globals.R
 9072e7e841d2aaaced6e1add8b5f6181 *R/io.R
 45fd81aed8106b135dd00c2b2a985834 *R/plot.R
-8f1b01a4d18a68a683e6acc00e43a7eb *R/raptor.R
+0694ceed95b3f5f587a73edd0a73f4a8 *R/raptor.R
 539bfc6a9f257277188bbf6165acb2c5 *R/service.R
 e314c690bb17d6e108b1f3c9eb2d4dfe *R/spatial.R
 c92bf0d3bcbd084a373b558a968ea98b *R/spec.R
@@ -22,16 +22,16 @@ b1ddab329e362cee5cd357d47b466ac8 *data/gtfs_duke.rda
 e57edd640999c69abd2933ec0c4b7fb7 *data/route_type_names.rda
 5b2c5b93fd0bc054110c3b540ea579a4 *inst/doc/frequency.R
 ec92dd5ddfc1247f2f4ea005ba591ae3 *inst/doc/frequency.Rmd
-36d7ba4a61975e178b9f649b2b3f51f3 *inst/doc/frequency.html
+80df434d4376a1c620814cd36c0aae12 *inst/doc/frequency.html
 f752842c9354301abadb652ccfb07c0c *inst/doc/introduction.R
 30ba0ec8059f6e29437880b3b73474ec *inst/doc/introduction.Rmd
-a1dfa507c370307de2849756bc5f46e4 *inst/doc/introduction.html
+6064c137f2045946004e51ac67485eda *inst/doc/introduction.html
 d8045e96e6bbe2a3e4039339208e0c1a *inst/doc/servicepatterns.R
 341e3f52b84e7ea42576e3fdd1a95a82 *inst/doc/servicepatterns.Rmd
-ab58cdbd49b82889d9edd0b928a86183 *inst/doc/servicepatterns.html
+ff6d14091822dd8cdc90bfe0a47fb70a *inst/doc/servicepatterns.html
 0d5877697212d4aa31c2b4f97096c9f3 *inst/doc/timetable.R
 8824f622bb042ae2ececb6cc3876c3fb *inst/doc/timetable.Rmd
-c7e829985c3bfc69a9059c4bec8bdc00 *inst/doc/timetable.html
+55763d6361b0bbe95faa3c3680ad4329 *inst/doc/timetable.html
 759838beca225b0825b72d9bb86e54b8 *inst/extdata/google_transit_nyc_subway.zip
 db599a3b3083c4f558a5c99db6dddff5 *inst/extdata/routing.zip
 ef94fbc71a2ab367db67850f6aa4c40a *inst/extdata/sample-feed-bom.zip
