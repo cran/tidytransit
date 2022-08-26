@@ -3,7 +3,7 @@
 #' Validates the GTFS object against GTFS specifications and raises warnings if
 #' required files/fields are not found. This function is called in \code{\link{read_gtfs}}.
 #'
-#' @param gtfs_obj A GTFS object
+#' @param gtfs_obj gtfs feed (tidygtfs object, created by [read_gtfs()])
 #' @param files A character vector containing the text files to be validated
 #'   against the GTFS specification (without the \code{.txt} extension). If
 #'   \code{NULL} (the default) the provided GTFS is validated against all
@@ -79,9 +79,10 @@ validate_gtfs <- function(gtfs_obj, files = NULL, quiet = TRUE, warnings = TRUE)
     if(is.null(file_metadata)) {
       file_provided_status  <- TRUE
       file_spec             <- "ext"
-      field                 <- names(gtfs_obj[[file]]); if(is.null(field)) field <- NA
       field_spec            <- "ext"
       field_provided_status <- TRUE
+      field                 <- names(gtfs_obj[[file]])
+      if(is.null(field)) field <- NA # file is not a dataframe
     } else {
 
       # undocumented fields are labeled as "extra" fields

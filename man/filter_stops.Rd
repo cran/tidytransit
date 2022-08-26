@@ -7,14 +7,14 @@
 filter_stops(gtfs_obj, service_ids, route_ids)
 }
 \arguments{
-\item{gtfs_obj}{as read by read_gtfs()}
+\item{gtfs_obj}{gtfs feed (tidygtfs object)}
 
 \item{service_ids}{the service for which to get stops}
 
 \item{route_ids}{the route_ids for which to get stops}
 }
 \value{
-stops table for a given service
+stops table for a given service or route
 }
 \description{
 Get a set of stops for a given set of service ids and route ids

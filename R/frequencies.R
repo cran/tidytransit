@@ -7,7 +7,7 @@
 #' Consider using this instead, as it will be more accurate than what 
 #' tidytransit calculates.
 #' 
-#' @param gtfs_obj a list of gtfs dataframes as read by [read_gtfs()].
+#' @param gtfs_obj gtfs feed (tidygtfs object)
 #' @param start_time analysis start time, can be given as "HH:MM:SS", 
 #'                   hms object or numeric value in seconds.
 #' @param end_time analysis perdiod end time, can be given as "HH:MM:SS", 
@@ -86,7 +86,7 @@ get_stop_frequency <- function(gtfs_obj,
 #' Consider using this instead, as it will be more accurate than what 
 #' tidytransit calculates. 
 #' 
-#' @param gtfs_obj a list of gtfs dataframes as read by the trread package.
+#' @param gtfs_obj gtfs feed (tidygtfs object)
 #' @param start_time analysis start time, can be given as "HH:MM:SS", 
 #'                   hms object or numeric value in seconds.
 #' @param end_time analysis perdiod end time, can be given as "HH:MM:SS", 
@@ -109,13 +109,12 @@ get_route_frequency <- function(gtfs_obj,
   total_departures <- median_headways <- mean_headways <- NULL
   n_departures <- mean_headway <- st_dev_headways <- stop_count <- NULL
   if(feed_contains(gtfs_obj, "frequencies") && nrow(gtfs_obj$frequencies) > 0) {  
-    message("A pre-calculated frequencies dataframe exists for this feed already, 
-            consider using that.") 
+    message("A pre-calculated frequencies dataframe exists for this feed already, consider using that.") 
   } 
   departures_per_stop = get_stop_frequency(gtfs_obj, start_time, end_time, 
                                            service_ids, by_route = TRUE)
 
-  if(dim(departures_per_stop)[[1]] != 0) {
+  if(nrow(departures_per_stop) > 0) {
     routes_frequency = departures_per_stop %>% 
       group_by(route_id) %>%
       summarise(total_departures = sum(n_departures),
@@ -124,7 +123,7 @@ get_route_frequency <- function(gtfs_obj,
                 st_dev_headways = round(sd(mean_headway), 2),
                 stop_count = dplyr::n())
   } else {
-    warning("Failed to calculate frequency, try passing a service_id from calendar_df.")
+    stop("Failed to calculate frequency, no departures found")
   }
   
   return(routes_frequency)

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Tom Buckley" />
 
-<meta name="date" content="2022-05-20" />
+<meta name="date" content="2022-08-26" />
 
 <title>Transit (GTFS) Service &amp; Headway Mapping with R</title>
 
@@ -142,17 +142,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Transit (GTFS) Service &amp; Headway Mapping with R</h1>
 <h4 class="author">Tom Buckley</h4>
-<h4 class="date">2022-05-20</h4>
+<h4 class="date">2022-08-26</h4>
 
 
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>The focus of this vignette is on how to use R to make graphics about where and how often transit service operates based on schedule data published in the <a href="https://gtfs.org/">General Transit Feed Specification</a>. We’ll focus on the New York City Metropolitan Transit Agency’s Subway schedule for this vignette, but you can easily apply it to thousands of other GTFS data sources. See the <a href="https://tidytransit.r-transit.org/articles/introduction.html#finding-more-gtfs-feeds">tidytransit introductory vignette</a> for instructions on finding data for other cities and operators.</p>
+<p>The focus of this vignette is on how to use R to make graphics about where and how often transit service operates based on schedule data published in the <a href="https://gtfs.org/">General Transit Feed Specification</a>. We’ll focus on the New York City Metropolitan Transit Agency’s Subway schedule for this vignette, but you can easily apply it to thousands of other GTFS data sources. See the <a href="https://r-transit.github.io/tidytransit/articles/introduction.html#finding-more-gtfs-feeds">tidytransit introductory vignette</a> for instructions on finding data for other cities and operators.</p>
 </div>
 <div id="setup" class="section level2">
 <h2>Setup</h2>
-<p>You’ll need to have tidytransit installed. Please see the <a href="https://tidytransit.r-transit.org/articles/introduction.html#installation-dependencies">install instructions</a> for more details.</p>
+<p>You’ll need to have tidytransit installed. Please see the <a href="https://r-transit.github.io/tidytransit/articles/introduction.html#installation-dependencies">install instructions</a> for more details.</p>
 </div>
 <div id="outline" class="section level2">
 <h2>Outline</h2>
@@ -166,7 +166,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ol>
 <div id="import-transit-data-gtfs" class="section level3">
 <h3>1) Import Transit Data (GTFS)</h3>
-<p>We’ll start by importing a snapshot of the NYC MTA’s subway schedule, which is included with the package when <a href="https://tidytransit.r-transit.org/index.html#installation">installed</a>.</p>
+<p>We’ll start by importing a snapshot of the NYC MTA’s subway schedule, which is included with the package when <a href="https://r-transit.github.io/tidytransit/index.html#installation">installed</a>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>local_gtfs_path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;google_transit_nyc_subway.zip&quot;</span>, <span class="at">package =</span> <span class="st">&quot;tidytransit&quot;</span>)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>gtfs <span class="ot">&lt;-</span> <span class="fu">read_gtfs</span>(local_gtfs_path)</span></code></pre></div>
 <p>But note that you can also just uncomment the line below and import the data from the NYC MTA’s URL directly.</p>
@@ -174,7 +174,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="identify-weekday-schedules-of-service" class="section level3">
 <h3>2) Identify Weekday Schedules of Service</h3>
-<p>GTFS feeds typically contain a schedule of all the schedules of service for a given system. Selecting a schedule of service in NYC allows us to focus on, for example, non-holiday weekday service, in the Fall of 2019. In some feeds, service selection can be more or less complicated than NYC. In any case, you’ll want to read the <a href="http://tidytransit.r-transit.org/articles/servicepatterns.html">service patterns</a> vignette included in this package in order to see how you can select the right service for your needs.</p>
+<p>GTFS feeds typically contain a schedule of all the schedules of service for a given system. Selecting a schedule of service in NYC allows us to focus on, for example, non-holiday weekday service, in the Fall of 2019. In some feeds, service selection can be more or less complicated than NYC. In any case, you’ll want to read the <a href="https://r-transit.github.io/tidytransit/articles/servicepatterns.html">service patterns</a> vignette included in this package in order to see how you can select the right service for your needs.</p>
 <p>We use one of the functions described in that vignette to create a table on the gtfs feed that lets us filter by weekday/weekend service.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gtfs <span class="ot">&lt;-</span> <span class="fu">set_servicepattern</span>(gtfs)</span></code></pre></div>
 <p>After setting the service patterns, we can summarise each service by the number of trips and stops. We’ll also summarise the total distance covered by all trips in the service, and then check that against the total distance covered by the average route. First, we need to calculate the distance of each part of the route shapes. To do this (and for creating maps later on) we convert stops and shapes to <a href="https://r-spatial.github.io/sf/articles/sf1.html">simple features</a> with <code>gtfs_as_sf</code>.</p>

@@ -33,20 +33,53 @@ validation_result <- attr(nyc, "validation_result")
 head(validation_result)
 
 ## -----------------------------------------------------------------------------
-head(feedlist)
+MobilityData.csv = read.csv("https://bit.ly/catalogs-csv")
+
+MobilityData_feedlist = MobilityData.csv %>% 
+  as_tibble() %>% 
+  filter(data_type == "gtfs")
+
+str(MobilityData_feedlist)
 
 ## ---- eval=FALSE--------------------------------------------------------------
-#  nyc_ferries_gtfs <- feedlist %>%
-#    filter(t=="NYC Ferry GTFS") %>%
-#    pull(url_d) %>%
-#    read_gtfs()
+#  gtfs_path_goldengate <- MobilityData_feedlist %>%
+#    filter(provider == "Golden Gate Transit") %>%
+#    pull(urls.direct_download)
+#  
+#  gtfs_goldengate = read_gtfs(gtfs_path_goldengate)
 
 ## -----------------------------------------------------------------------------
-library(sf)
+# create a bounding box polygon from min/max corner coordinates
+suppressPackageStartupMessages(library(sf))
+bbox_polygon = function(lon_min, lon_max, lat_min, lat_max) {
+  corner_coords = matrix(
+    c(lon_min, lat_min,
+      lon_min, lat_max,
+      lon_max, lat_max,
+      lon_max, lat_min,
+      lon_min, lat_min),
+    ncol = 2, byrow = T
+  )
+  polyg = st_polygon(list(corner_coords))
+  return(st_sfc(polyg, crs = 4326))
+}
 
-feedlist_sf <- st_as_sf(feedlist,
-                        coords=c("loc_lng","loc_lat"),
-                        crs=4326)
+# create bounding box polygon (only for reasonable values)
+MobilityData_sf = MobilityData_feedlist %>% 
+  filter(!is.na(location.bounding_box.minimum_longitude)) %>% 
+  filter(location.bounding_box.minimum_latitude > -89) %>% 
+  group_by(mdb_source_id) %>% 
+  mutate(geometry = bbox_polygon(location.bounding_box.minimum_longitude,
+                                 location.bounding_box.maximum_longitude,
+                                 location.bounding_box.minimum_latitude,
+                                 location.bounding_box.maximum_latitude)) %>% 
+  ungroup() %>% st_as_sf()
 
-plot(feedlist_sf, max.plot = 1)
+## ---- fig.width=7-------------------------------------------------------------
+library(leaflet)
+leaflet() %>% 
+  addProviderTiles(provider = providers$CartoDB.Positron) %>% 
+  addPolygons(data = MobilityData_sf, weight = 2, 
+              fillOpacity = 0.1, label = substr(MobilityData_sf$provider, 0, 60))
+
 
