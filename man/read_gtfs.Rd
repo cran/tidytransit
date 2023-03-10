@@ -4,7 +4,7 @@
 \alias{read_gtfs}
 \title{Read and validate GTFS files}
 \usage{
-read_gtfs(path, files = NULL, quiet = TRUE)
+read_gtfs(path, files = NULL, quiet = TRUE, ...)
 }
 \arguments{
 \item{path}{The path to a GTFS \code{.zip} file.}
@@ -14,6 +14,9 @@ GTFS (without the \code{.txt} extension). If \code{NULL} (the default) all
 existing files are read.}
 
 \item{quiet}{Whether to hide log messages and progress bars (defaults to TRUE).}
+
+\item{...}{Can be used to pass on arguments to \code{\link[gtfsio:import_gtfs]{gtfsio::import_gtfs()}}. The parameters
+\code{files} and \code{quiet} are passed on by default.}
 }
 \value{
 A tidygtfs object: a list of tibbles in which each entry represents a
@@ -24,13 +27,14 @@ Reads GTFS text files from either a local \code{.zip} file or an URL and
 validates them against GTFS specifications.
 }
 \examples{
+\dontrun{
 local_gtfs_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
 gtfs <- read_gtfs(local_gtfs_path)
 summary(gtfs)
 
 gtfs <- read_gtfs(local_gtfs_path, files = c("trips", "stop_times"))
 names(gtfs)
-
+}
 }
 \seealso{
 \code{\link{validate_gtfs}}

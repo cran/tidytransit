@@ -12,7 +12,7 @@
 
 <meta name="author" content="Tom Buckley" />
 
-<meta name="date" content="2023-02-01" />
+<meta name="date" content="2023-03-10" />
 
 <title>Transit (GTFS) Service &amp; Headway Mapping with R</title>
 
@@ -142,7 +142,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <h1 class="title toc-ignore">Transit (GTFS) Service &amp; Headway Mapping with R</h1>
 <h4 class="author">Tom Buckley</h4>
-<h4 class="date">2023-02-01</h4>
+<h4 class="date">2023-03-10</h4>
 
 
 
@@ -195,7 +195,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">routes =</span> <span class="fu">n_distinct</span>(route_id),</span>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_distance_per_day_km =</span> <span class="fu">sum</span>(<span class="fu">as.numeric</span>(length), <span class="at">na.rm=</span><span class="cn">TRUE</span>)<span class="sc">/</span><span class="fl">1e3</span>,</span>
 <span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">route_avg_distance_km =</span> (<span class="fu">sum</span>(<span class="fu">as.numeric</span>(length), <span class="at">na.rm=</span><span class="cn">TRUE</span>)<span class="sc">/</span><span class="fl">1e3</span>)<span class="sc">/</span>(trips<span class="sc">*</span>routes),</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">stops=</span>(<span class="fu">n_distinct</span>(stop_id)<span class="sc">/</span><span class="dv">2</span>))</span></code></pre></div>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">stops=</span>(<span class="fu">n_distinct</span>(stop_id)<span class="sc">/</span><span class="dv">2</span>))</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in left_join(., gtfs$stop_times, by = &quot;trip_id&quot;): Each row in `x` is expected to match at most 1 row in `y`.</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Row 1 of `x` matches multiple rows.</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ If multiple matches are expected, set `multiple = &quot;all&quot;` to silence this</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   warning.</span></span></code></pre></div>
 <p>We can also add the number of days that each service is in operation.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>service_pattern_summary <span class="ot">&lt;-</span> gtfs<span class="sc">$</span>.<span class="sc">$</span>dates_servicepatterns <span class="sc">%&gt;%</span> </span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(servicepattern_id) <span class="sc">%&gt;%</span> </span>
@@ -683,7 +687,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(stop_id, stop_name, n_departures, mean_headway) <span class="sc">%&gt;%</span> </span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(n_departures) <span class="sc">%&gt;%</span> </span>
 <span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in sf_column %in% names(g): Each row in `x` is expected to match at most 1 row in `y`.</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Row 53 of `x` matches multiple rows.</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ If multiple matches are expected, set `multiple = &quot;all&quot;` to silence this</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   warning.</span></span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -741,13 +749,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </table>
 <p>First, we’ll leverage the common <code>stop_name</code> variable to group and count departures, in both directions, for all stops, filtering to out a number of smaller stops for more graphical clarity.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>am_stop_name_departures <span class="ot">&lt;-</span> <span class="fu">left_join</span>(gtfs<span class="sc">$</span>stops, am_stop_freq, <span class="at">by=</span><span class="st">&quot;stop_id&quot;</span>)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>am_stop_name_departures <span class="ot">&lt;-</span> am_stop_name_departures <span class="sc">%&gt;%</span>  </span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(stop_name) <span class="sc">%&gt;%</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">total_departures =</span> <span class="fu">sum</span>(n_departures, <span class="at">na.rm=</span><span class="cn">TRUE</span>))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in sf_column %in% names(g): Each row in `x` is expected to match at most 1 row in `y`.</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ Row 53 of `x` matches multiple rows.</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ℹ If multiple matches are expected, set `multiple = &quot;all&quot;` to silence this</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   warning.</span></span>
 <span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>am_stop_name_departures <span class="ot">&lt;-</span> am_stop_name_departures <span class="sc">%&gt;%</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(total_departures <span class="sc">&gt;</span> <span class="dv">100</span>)</span></code></pre></div>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>am_stop_name_departures <span class="ot">&lt;-</span> am_stop_name_departures <span class="sc">%&gt;%</span>  </span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(stop_name) <span class="sc">%&gt;%</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">total_departures =</span> <span class="fu">sum</span>(n_departures, <span class="at">na.rm=</span><span class="cn">TRUE</span>))</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>am_stop_name_departures <span class="ot">&lt;-</span> am_stop_name_departures <span class="sc">%&gt;%</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(total_departures <span class="sc">&gt;</span> <span class="dv">100</span>)</span></code></pre></div>
 <p>Finally, we can plot both the route line counts and the stop departure counts on one map:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> routes_sf_buffer, </span>

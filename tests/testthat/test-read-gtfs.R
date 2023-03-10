@@ -18,23 +18,37 @@ test_that("read_gtfs() imports a local file to a
 test_that("loud read_gtfs", {
   expect_is(
     read_gtfs(local_gtfs_path, quiet = FALSE),
-    "gtfs")
+    "tidygtfs")
+})
+
+test_that("gtfsio arguments", {
+  expect_is(
+    read_gtfs(local_gtfs_path, encoding = "UTF-8"),
+    "tidygtfs"
+  )
+})
+
+
+test_that("tidygtfs class inheritance list", {
+  expect_equal(
+    class(read_gtfs(local_gtfs_path)),
+    c("tidygtfs", "gtfs", "list")
+  )
 })
 
 test_that("the read_gtfs function works with urls", {
   skip_on_cran()
   x <- read_gtfs(gtfs_example_url, quiet=TRUE)
   expect_is(x, "gtfs") # should return 'list' object
+  expect_is(x, "tidygtfs")
 })
 
 test_that("the read_gtfs function fails gracefully on bad urls", {
   skip_on_cran()
   
-  not_zip <- "https://developers.google.com/transit/gtfs/examples/sample-feed.zippy"
   bad_file <- "/Users/wrong.zip"
   bad_url <- "https://developers.google.com/transit/gtfs/examples/sample-feed-bad.zip"
   
-  expect_error(read_gtfs(not_zip, quiet=TRUE), "'path' must have '.zip' extension")
   expect_error(read_gtfs(bad_file), "'path' points to non-existent file: '/Users/wrong.zip'")
   expect_error(suppressWarnings(read_gtfs(bad_url)),
                "cannot open URL 'https://developers.google.com/transit/gtfs/examples/sample-feed-bad.zip'")
@@ -65,6 +79,8 @@ test_that("validation", {
   g$extra <- "not_a_dataframe"
   vd = validate_gtfs(g)
   expect_true(is.na(vd[vd$file == "extra","field"]))
+  
+  expect_error(validate_gtfs(g, files = c("unknown", "other")), "File names not found in gtfs_obj: unknown, other")
 })
 
 test_that("files parameter", {
@@ -84,4 +100,27 @@ test_that("files parameter", {
   for(f in fns) {
     expect_no_warning(read_gtfs(path, files = f)) # no warning expected
   }
+})
+
+test_that("NA times", {
+  g = read_gtfs(system.file("extdata", "routing-NA-times.zip", package = "tidytransit"))
+  
+  expect_equal(g$stop_times$arrival_time[c(15,16,18)], rep(hms::hms(NA), 3))
+  expect_equal(g$stop_times$departure_time[c(23,19,4)], rep(hms::hms(NA), 3))
+})
+
+test_that("non-unique stop_ids", {
+  g1 = read_gtfs(system.file("extdata", "routing.zip", package = "tidytransit"))
+  g1$stops$stop_id[1] <- "stop1a"
+  g1$trips$trip_id[2] <- "routeA1"
+  
+  tmppath = tempfile(fileext = ".zip")
+  write_gtfs(g1, tmppath)
+  
+  expect_warning(read_gtfs(tmppath), "Duplicated ids found in: stops, trips")
+  
+  g2 = suppressWarnings(read_gtfs(tmppath))
+  
+  expect_is(g2, "gtfs")
+  expect_false(inherits(g2, "tidygtfs"))
 })

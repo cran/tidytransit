@@ -29,7 +29,7 @@
 #' @param max_departure_time Either set this parameter or `time_range`. Only departures 
 #'                           before `max_departure_time` are used. Accepts "HH:MM:SS" or 
 #'                           seconds as a numerical value. Unused if `arrival` is TRUE.
-#' @param return_coords Returns stop coordinates as columms. Default is FALSE.                            
+#' @param return_coords Returns stop coordinates as columns. Default is FALSE.                            
 #' @param return_DT travel_times() returns a data.table if TRUE. Default is FALSE which 
 #'                  returns a tibble/tbl_df.
 #' @param stop_dist_check stop_names are not structured identifiers like 
@@ -186,6 +186,8 @@ filter_stop_times = function(gtfs_obj,
                              extract_date,
                              min_departure_time,
                              max_arrival_time) {
+  gtfs_obj$stop_times <- replace_NA_times(gtfs_obj$stop_times)
+  
   departure_time_num <- arrival_time_num <- NULL
   if(is.character(extract_date)) {
     extract_date <- as.Date(extract_date)
