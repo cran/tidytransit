@@ -35,7 +35,8 @@ if(!exists("trip_headsign", where = gtfs$trips)) {
   trip_headsigns <- gtfs$stop_times %>% 
     group_by(trip_id) %>% 
     summarise(stop_id = stop_id[which.max(stop_sequence)]) %>% 
-    left_join(gtfs$stops, by="stop_id") %>% select(trip_id, trip_headsign.computed = stop_name)
+    left_join(gtfs$stops, by="stop_id") %>%
+    select(trip_id, trip_headsign.computed = stop_name)
 
   # assign the headsign to the gtfs object 
   gtfs$trips <- left_join(gtfs$trips, trip_headsigns, by = "trip_id")

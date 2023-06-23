@@ -38,8 +38,10 @@ gtfs <- set_servicepattern(gtfs)
 head(gtfs$.$servicepatterns)
 
 ## -----------------------------------------------------------------------------
+head(gtfs$.$dates_servicepatterns)
+
 # service ids used
-n_services <-  length(unique(gtfs$trips$service_id)) # 70
+n_services <- length(unique(gtfs$trips$service_id)) # 70
 
 # unique date patterns 
 n_servicepatterns <- length(unique(gtfs$.$servicepatterns$servicepattern_id)) # 7
