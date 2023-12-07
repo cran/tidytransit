@@ -96,7 +96,7 @@ one_line_stops %>%
 one_line_stops_sf <- gtfs$stops %>%
   right_join(one_line_stops, by="stop_id") 
 
-## ---- fig.width=9-------------------------------------------------------------
+## ----fig.width=9--------------------------------------------------------------
 one_line_stops_sf %>% 
   ggplot() + 
   geom_sf(aes(color = mean_headway_minutes)) +
@@ -119,7 +119,7 @@ routes_sf <- get_route_geometry(gtfs, service_ids = service_ids)
 routes_sf <- routes_sf %>% 
   inner_join(am_route_freq, by = 'route_id')
 
-## ---- fig.width=6, fig.height=10, warn=FALSE----------------------------------
+## ----fig.width=6, fig.height=10, warn=FALSE-----------------------------------
 # convert to an appropriate coordinate reference system
 routes_sf_crs <- sf::st_transform(routes_sf, 26919) 
 routes_sf_crs %>% 
@@ -134,7 +134,7 @@ routes_sf_crs %>%
 routes_sf_buffer <- st_buffer(routes_sf,
                               dist = routes_sf$total_departures/1e6)
 
-## ---- fig.width=6, fig.height=10----------------------------------------------
+## ----fig.width=6, fig.height=10-----------------------------------------------
 routes_sf_buffer %>% 
   ggplot() + 
   geom_sf(colour = alpha("white", 0), fill = alpha("red",0.2)) +
@@ -159,7 +159,7 @@ am_stop_name_departures <- am_stop_name_departures %>%
 am_stop_name_departures <- am_stop_name_departures %>%
   filter(total_departures > 100)
 
-## ---- fig.width=6, fig.height=10----------------------------------------------
+## ----fig.width=6, fig.height=10-----------------------------------------------
 ggplot() + 
   geom_sf(data = routes_sf_buffer, 
           colour = alpha("white",0), fill = alpha("red",0.3)) +

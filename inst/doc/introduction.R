@@ -3,7 +3,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidytransit)
 library(dplyr)
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # Once sf is installed, you can install from CRAN with:
 #  install.packages('tidytransit')
 #  
@@ -41,7 +41,7 @@ MobilityData_feedlist = MobilityData.csv %>%
 
 str(MobilityData_feedlist)
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  gtfs_path_goldengate <- MobilityData_feedlist %>%
 #    filter(provider == "Golden Gate Transit") %>%
 #    pull(urls.direct_download)
@@ -75,7 +75,7 @@ MobilityData_sf = MobilityData_feedlist %>%
                                  location.bounding_box.maximum_latitude)) %>% 
   ungroup() %>% st_as_sf()
 
-## ---- fig.width=7-------------------------------------------------------------
+## ----fig.width=7--------------------------------------------------------------
 library(leaflet)
 leaflet() %>% 
   addProviderTiles(provider = providers$CartoDB.Positron) %>% 
