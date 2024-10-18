@@ -89,7 +89,7 @@ get_stop_frequency <- function(gtfs_obj,
 #' @param gtfs_obj gtfs feed (tidygtfs object)
 #' @param start_time analysis start time, can be given as "HH:MM:SS", 
 #'                   hms object or numeric value in seconds.
-#' @param end_time analysis perdiod end time, can be given as "HH:MM:SS", 
+#' @param end_time analysis period end time, can be given as "HH:MM:SS", 
 #'                 hms object or numeric value in seconds.
 #' @param service_ids A set of service_ids from the calendar dataframe 
 #'                    identifying a particular service id. If not provided, the service_id 
@@ -108,7 +108,7 @@ get_route_frequency <- function(gtfs_obj,
                                 service_ids = NULL) {
   total_departures <- median_headways <- mean_headways <- NULL
   n_departures <- mean_headway <- st_dev_headways <- stop_count <- NULL
-  if(feed_contains(gtfs_obj, "frequencies") && nrow(gtfs_obj$frequencies) > 0) {  
+  if(feed_has_non_empty_table(gtfs_obj, "frequencies")) {  
     message("A pre-calculated frequencies dataframe exists for this feed already, consider using that.") 
   } 
   departures_per_stop = get_stop_frequency(gtfs_obj, start_time, end_time, 

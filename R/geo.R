@@ -6,14 +6,14 @@
 #' @return Returns a data.frame with each row containing a pair of stop_ids (columns
 #'         `from_stop_id` and `to_stop_id`) and the `distance` between them (in meters)
 #'        
-#' @note The resulting data.frame has nrow(gtfs_stops)^2 rows, distances calculations 
-#'       among all stops for large feeds should be avoided
+#' @note The resulting data.frame has `nrow(gtfs_stops)^2` rows, distances calculations 
+#'       among all stops for large feeds should be avoided.
 #'       
 #' @examples
 #' \dontrun{
 #' library(dplyr)
 #' 
-#' nyc_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
+#' nyc_path <- system.file("extdata", "nyc_subway.zip", package = "tidytransit")
 #' nyc <- read_gtfs(nyc_path)
 #' 
 #' nyc$stops %>%
@@ -93,7 +93,7 @@ prep_dist_mtrx = function(dist_list) {
 #' By default calculates distances among stop_ids with the same stop_name.
 #' 
 #' @inheritParams stop_distances
-#' @param by group column, default: stop_name
+#' @param by group column, default: "stop_name"
 #' 
 #' @returns data.frame with one row per group containing a distance matrix (distances),
 #'          number of stop ids within that group (n_stop_ids) and distance summary values 
@@ -103,7 +103,7 @@ prep_dist_mtrx = function(dist_list) {
 #' \dontrun{
 #' library(dplyr)
 #' 
-#' nyc_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
+#' nyc_path <- system.file("extdata", "nyc_subway.zip", package = "tidytransit")
 #' nyc <- read_gtfs(nyc_path)
 #' 
 #' stop_group_distances(nyc$stops)
@@ -125,11 +125,11 @@ prep_dist_mtrx = function(dist_list) {
 #' @export
 stop_group_distances = function(gtfs_stops, by = "stop_name") {
   distances <- n_stop_ids <- dist_mean <- dist_median <- dist_max <- NULL
-  if(inherits(gtfs_stops, "sf")) {
-    gtfs_stops <- sf_points_to_df(gtfs_stops, c("stop_lon", "stop_lat"), TRUE)
-  }
   if(!by %in% colnames(gtfs_stops)) {
     stop("column ", by, " does not exist in ", deparse(substitute(gtfs_stops)))
+  }
+  if(inherits(gtfs_stops, "sf")) {
+    gtfs_stops <- sf_points_to_df(gtfs_stops, c("stop_lon", "stop_lat"), TRUE)
   }
   n_stops = table(gtfs_stops$stop_name)
   
@@ -159,7 +159,7 @@ stop_group_distances = function(gtfs_stops, by = "stop_name") {
     dplyr::mutate(distances = list(matrix(0)), n_stop_ids = 1, dist_mean = 0, dist_median = 0, dist_max = 0)
 
   dists = dplyr::as_tibble(dplyr::bind_rows(gtfs_single_stops, gtfs_multip_stops))
-  dists[order(dists$dist_max, dists$n_stop_ids, dists[[by]], decreasing = T),]
+  dists[order(dists$dist_max, dists$n_stop_ids, dists[[by]], decreasing = TRUE),]
 }
 
 #' Cluster nearby stops within a group
@@ -185,7 +185,7 @@ stop_group_distances = function(gtfs_stops, by = "stop_name") {
 #' @importFrom stats kmeans
 #' @examples \donttest{
 #' library(dplyr)
-#' nyc_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
+#' nyc_path <- system.file("extdata", "nyc_subway.zip", package = "tidytransit")
 #' nyc <- read_gtfs(nyc_path)
 #' nyc <- cluster_stops(nyc)
 #' 
@@ -194,19 +194,8 @@ stop_group_distances = function(gtfs_stops, by = "stop_name") {
 #'   filter(stop_name == "86 St")
 #'
 #' table(stops_86_St$stop_name_cluster)
-#' #> 86 St [1] 86 St [2] 86 St [3] 86 St [4] 86 St [5] 86 St [6] 
-#' #>         3         3         3         3         3         3 
 #'
 #' stops_86_St %>% select(stop_id, stop_name, parent_station, stop_name_cluster) %>% head()
-#' #> # A tibble: 6 × 4
-#' #>   stop_id stop_name parent_station stop_name_cluster
-#' #>   <chr>   <chr>     <chr>          <chr>            
-#' #> 1 121     86 St     ""             86 St [3]        
-#' #> 2 121N    86 St     "121"          86 St [3]        
-#' #> 3 121S    86 St     "121"          86 St [3]        
-#' #> 4 626     86 St     ""             86 St [4]        
-#' #> 5 626N    86 St     "626"          86 St [4]        
-#' #> 6 626S    86 St     "626"          86 St [4]
 #' 
 #' library(ggplot2)
 #' ggplot(stops_86_St) +

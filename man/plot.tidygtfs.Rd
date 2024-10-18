@@ -7,9 +7,9 @@
 \method{plot}{tidygtfs}(x, ...)
 }
 \arguments{
-\item{x}{a gtfs_obj as read by read_gtfs()}
+\item{x}{a tidygtfs object as read by \code{\link[=read_gtfs]{read_gtfs()}}}
 
-\item{...}{further specifications}
+\item{...}{ignored for tidygtfs}
 }
 \value{
 plot
@@ -20,7 +20,7 @@ Plot GTFS stops and trips
 \examples{
 \donttest{
 local_gtfs_path <- system.file("extdata",
-                              "google_transit_nyc_subway.zip",
+                              "nyc_subway.zip",
                               package = "tidytransit")
 nyc <- read_gtfs(local_gtfs_path)
 plot(nyc)

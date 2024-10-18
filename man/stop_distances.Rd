@@ -18,14 +18,14 @@ Returns a data.frame with each row containing a pair of stop_ids (columns
 Calculate distances between a given set of stops
 }
 \note{
-The resulting data.frame has nrow(gtfs_stops)^2 rows, distances calculations
-among all stops for large feeds should be avoided
+The resulting data.frame has \code{nrow(gtfs_stops)^2} rows, distances calculations
+among all stops for large feeds should be avoided.
 }
 \examples{
 \dontrun{
 library(dplyr)
 
-nyc_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
+nyc_path <- system.file("extdata", "nyc_subway.zip", package = "tidytransit")
 nyc <- read_gtfs(nyc_path)
 
 nyc$stops \%>\%

@@ -24,15 +24,15 @@ departure or arrival time has been set.}
 \item{stop_name}{Stop name for which travel times should be calculated. A vector with
 multiple names can be used.}
 
-\item{time_range}{Either a range in seconds or a vector containing the
-minimal and maximal departure time (i.e. earliest and
-latest possible journey departure time) as seconds or
-"HH:MM:SS" character.}
+\item{time_range}{Either a range in seconds or a vector containing the minimal and maximal
+departure time (i.e. earliest and latest possible journey departure time)
+as seconds or "HH:MM:SS" character. If \code{arrival} is TRUE, \code{time_range}
+describes the time window when journeys should end at \code{stop_name}.}
 
 \item{arrival}{If FALSE (default), all journeys \emph{start} from \code{stop_name}. If
 TRUE, all journeys \emph{end} at \code{stop_name}.}
 
-\item{max_transfers}{The maximimum number of transfers}
+\item{max_transfers}{The maximum number of transfers. No limit if \code{NULL}}
 
 \item{max_departure_time}{Deprecated. Use \code{time_range} to set the latest
 possible departure time.}
@@ -40,7 +40,7 @@ possible departure time.}
 \item{return_coords}{Returns stop coordinates (lon/lat) as columns. Default is FALSE.}
 
 \item{return_DT}{travel_times() returns a data.table if TRUE. Default is FALSE which
-returns a tibble/tbl_df.}
+returns a \code{tibble/tbl_df}.}
 
 \item{stop_dist_check}{stop_names are not structured identifiers like
 stop_ids or parent_stations, so it's possible that
@@ -96,7 +96,7 @@ all(tts1 == tts2)
 
 # 2) separate filtering and travel time calculation for a more granular analysis
 # stop_names in this feed are not restricted to an area, create clusters of stops to fix
-nyc_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
+nyc_path <- system.file("extdata", "nyc_subway.zip", package = "tidytransit")
 nyc <- read_gtfs(nyc_path)
 nyc <- cluster_stops(nyc, group_col = "stop_name", cluster_colname = "stop_name")
 

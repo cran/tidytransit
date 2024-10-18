@@ -17,18 +17,18 @@
 #'                            departure or arrival time has been set.
 #' @param stop_name Stop name for which travel times should be calculated. A vector with
 #'                  multiple names can be used.
-#' @param time_range Either a range in seconds or a vector containing the
-#'                   minimal and maximal departure time (i.e. earliest and
-#'                   latest possible journey departure time) as seconds or
-#'                   "HH:MM:SS" character.
+#' @param time_range Either a range in seconds or a vector containing the minimal and maximal 
+#'                   departure time (i.e. earliest and latest possible journey departure time) 
+#'                   as seconds or "HH:MM:SS" character. If `arrival` is TRUE, `time_range` 
+#'                   describes the time window when journeys should end at `stop_name`.
 #' @param arrival If FALSE (default), all journeys _start_ from `stop_name`. If
 #'                TRUE, all journeys _end_ at `stop_name`.
-#' @param max_transfers The maximimum number of transfers
+#' @param max_transfers The maximum number of transfers. No limit if `NULL`
 #' @param max_departure_time Deprecated. Use `time_range` to set the latest
 #'                           possible departure time.
 #' @param return_coords Returns stop coordinates (lon/lat) as columns. Default is FALSE.
 #' @param return_DT travel_times() returns a data.table if TRUE. Default is FALSE which
-#'                  returns a tibble/tbl_df.
+#'                  returns a `tibble/tbl_df`.
 #' @param stop_dist_check stop_names are not structured identifiers like
 #'                        stop_ids or parent_stations, so it's possible that
 #'                        stops with the same name are far apart. travel_times()
@@ -69,7 +69,7 @@
 #'
 #' # 2) separate filtering and travel time calculation for a more granular analysis
 #' # stop_names in this feed are not restricted to an area, create clusters of stops to fix
-#' nyc_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
+#' nyc_path <- system.file("extdata", "nyc_subway.zip", package = "tidytransit")
 #' nyc <- read_gtfs(nyc_path)
 #' nyc <- cluster_stops(nyc, group_col = "stop_name", cluster_colname = "stop_name")
 #' 
@@ -103,7 +103,7 @@ travel_times = function(filtered_stop_times,
                         stop_dist_check = 300) {
   travel_time <- journey_arrival_time <- journey_departure_time <- NULL
   stop_names = stop_name; rm(stop_name)
-  if("tidygtfs" %in% class(filtered_stop_times)) {
+  if(inherits(filtered_stop_times, "tidygtfs")) {
     gtfs_obj = filtered_stop_times
     if(is.null(attributes(gtfs_obj$stop_times)$extract_date)) {
       stop("Travel times cannot be calculated with an unfiltered tidygtfs object. Use filter_feed_by_date().")
@@ -126,7 +126,7 @@ travel_times = function(filtered_stop_times,
   # get stop_ids of names
   stop_ids = stops$stop_id[which(stops$stop_name %in% stop_names)]
   if(length(stop_ids) == 0) {
-    stop(paste0("Stop name '", stop_names, "' not found in stops table"))
+    stop("Stop name '", stop_names, "' not found in stops table")
   }
 
   # Check stop_name integrity
@@ -193,11 +193,11 @@ travel_times = function(filtered_stop_times,
 #'
 #' @export
 #' @examples
-#' feed_path <- system.file("extdata", "sample-feed-fixed.zip", package = "tidytransit")
+#' feed_path <- system.file("extdata", "routing.zip", package = "tidytransit")
 #' g <- read_gtfs(feed_path)
 #'
 #' # filter the sample feed
-#' stop_times <- filter_stop_times(g, "2007-01-06", "06:00:00", "08:00:00")
+#' stop_times <- filter_stop_times(g, "2018-10-01", "06:00:00", "08:00:00")
 filter_stop_times = function(gtfs_obj,
                              extract_date,
                              min_departure_time,
@@ -236,7 +236,7 @@ filter_stop_times = function(gtfs_obj,
   # trips running on day
   service_ids = filter(gtfs_obj$.$dates_services, date == extract_date)
   if(nrow(service_ids) == 0) {
-    stop(paste0("No stop_times on ", extract_date))
+    stop("No stop_times on ", extract_date)
   }
   trips = inner_join(gtfs_obj$trips, service_ids, by = "service_id")
   trips = as.data.table(unique(trips[,c("trip_id")]))

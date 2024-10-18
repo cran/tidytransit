@@ -15,7 +15,7 @@ library(dplyr)
 # nyc <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
 
 local_gtfs_path <- system.file("extdata", 
-                               "google_transit_nyc_subway.zip", 
+                               "nyc_subway.zip", 
                                package = "tidytransit")
 nyc <- read_gtfs(local_gtfs_path)
 
@@ -33,7 +33,7 @@ validation_result <- attr(nyc, "validation_result")
 head(validation_result)
 
 ## -----------------------------------------------------------------------------
-MobilityData.csv = read.csv("https://bit.ly/catalogs-csv")
+MobilityData.csv = read.csv("https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media")
 
 MobilityData_feedlist = MobilityData.csv %>% 
   as_tibble() %>% 
@@ -75,11 +75,11 @@ MobilityData_sf = MobilityData_feedlist %>%
                                  location.bounding_box.maximum_latitude)) %>% 
   ungroup() %>% st_as_sf()
 
-## ----fig.width=7--------------------------------------------------------------
-library(leaflet)
-leaflet() %>% 
-  addProviderTiles(provider = providers$CartoDB.Positron) %>% 
-  addPolygons(data = MobilityData_sf, weight = 2, 
-              fillOpacity = 0.1, label = substr(MobilityData_sf$provider, 0, 60))
-
+## ----fig.width=7, eval=FALSE--------------------------------------------------
+#  library(leaflet)
+#  leaflet() %>%
+#    addProviderTiles(provider = providers$CartoDB.Positron) %>%
+#    addPolygons(data = MobilityData_sf, weight = 2,
+#                fillOpacity = 0.1, label = substr(MobilityData_sf$provider, 0, 60))
+#  
 

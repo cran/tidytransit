@@ -80,7 +80,7 @@ test_that("filter_feed with shapes", {
 
 test_that("filter_feed_by_date", {
   skip_on_cran()
-  g0 = read_gtfs(system.file("extdata", "google_transit_nyc_subway.zip",
+  g0 = read_gtfs(system.file("extdata", "nyc_subway.zip",
                              package = "tidytransit"))
   g1 = filter_feed_by_date(g0, "2018-06-28")
   g2 = filter_feed_by_date(g0, "2018-10-30")
@@ -91,10 +91,6 @@ test_that("filter_feed_by_date", {
   
   expect_s3_class(g1$stop_times, "tbl_df")
   expect_s3_class(g2$stop_times, "tbl_df")
-})
-
-test_that("gtfs_meta", {
-  expect_equal(gtfs_meta, get_gtfs_meta())
 })
 
 test_that("empty_strings_to_na", {
@@ -114,4 +110,23 @@ test_that("empty_strings_to_na", {
   for(tbl in names(g1)) {
     expect_equal(g1[[tbl]], g3[[tbl]])
   } 
+})
+
+test_that("feed_contains, feed_has_non_empty_table", {
+  g = gtfs_duke
+  expect_false(feed_contains(g, "dates_services"))
+  expect_false(feed_has_non_empty_table(g, "dates_services"))
+  expect_true(feed_contains.(g, "dates_services"))
+  
+  expect_true(feed_contains(g, "calendar_dates"))
+  expect_false(feed_contains.(g, "calendar_dates"))
+  expect_false(feed_has_non_empty_table(g, "calendar_dates"))
+
+  expect_true(feed_contains(g, "calendar"))
+  expect_false(feed_contains.(g, "calendar"))
+  expect_true(feed_has_non_empty_table(g, "calendar"))
+  
+  expect_false(feed_contains.(g, "servicepatterns"))
+  g <- set_servicepattern(g)
+  expect_true(feed_contains.(g, "servicepatterns"))
 })

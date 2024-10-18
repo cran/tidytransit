@@ -10,7 +10,7 @@ stop_group_distances(gtfs_stops, by = "stop_name")
 \item{gtfs_stops}{gtfs stops table either as data frame (with at least \code{stop_id},
 \code{stop_lon} and \code{stop_lat} columns) or as \code{sf} object.}
 
-\item{by}{group column, default: stop_name}
+\item{by}{group column, default: "stop_name"}
 }
 \value{
 data.frame with one row per group containing a distance matrix (distances),
@@ -24,7 +24,7 @@ By default calculates distances among stop_ids with the same stop_name.
 \dontrun{
 library(dplyr)
 
-nyc_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
+nyc_path <- system.file("extdata", "nyc_subway.zip", package = "tidytransit")
 nyc <- read_gtfs(nyc_path)
 
 stop_group_distances(nyc$stops)

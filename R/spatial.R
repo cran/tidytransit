@@ -42,7 +42,7 @@ gtfs_as_sf <- function(gtfs_obj, skip_shapes = FALSE, crs = NULL, quiet = TRUE) 
 #' data(gtfs_duke)
 #' some_stops <- gtfs_duke$stops[sample(nrow(gtfs_duke$stops), 40),]
 #' some_stops_sf <- stops_as_sf(some_stops)
-#' plot(some_stops_sf)
+#' plot(some_stops_sf[,"stop_name"])
 stops_as_sf <- function(stops, crs = NULL) {
   stops_sf <- sf::st_as_sf(stops,
                            coords = c("stop_lon", "stop_lat"),
@@ -96,7 +96,7 @@ shapes_as_sf <- function(gtfs_shapes, crs = NULL) {
 #' routes_sf <- get_route_geometry(gtfs_duke_sf)
 #' plot(routes_sf[c(1,1350),])
 get_route_geometry <- function(gtfs_sf_obj, route_ids = NULL, service_ids = NULL) {
-  if(!"sf" %in% class(gtfs_sf_obj$shapes)) {
+  if(!inherits(gtfs_sf_obj$shapes, "sf")) {
     stop("shapes not converted to sf, use gtfs_obj <- gtfs_as_sf(gtfs_obj)")
   }
   trips <- gtfs_sf_obj$trips
@@ -135,9 +135,9 @@ get_route_geometry <- function(gtfs_sf_obj, route_ids = NULL, service_ids = NULL
 #' data(gtfs_duke)
 #' gtfs_duke <- gtfs_as_sf(gtfs_duke)
 #' trips_sf <- get_trip_geometry(gtfs_duke, c("t_726295_b_19493_tn_41", "t_726295_b_19493_tn_40"))
-#' plot(trips_sf[1,])
+#' plot(trips_sf[1,"shape_id"])
 get_trip_geometry <- function(gtfs_sf_obj, trip_ids) {
-  if(!"sf" %in% class(gtfs_sf_obj$shapes)) {
+  if(!inherits(gtfs_sf_obj$shapes, "sf")) {
     stop("shapes not converted to sf, use gtfs_obj <- gtfs_as_sf(gtfs_obj)")
   }
   id_diff = setdiff(trip_ids, gtfs_sf_obj$trips$trip_id)
@@ -154,7 +154,7 @@ get_trip_geometry <- function(gtfs_sf_obj, trip_ids) {
 
 #' return an sf linestring with lat and long from gtfs
 #' @param df dataframe from the gtfs shapes split() on shape_id
-#' @noRd
+#' @keywords internal
 #' @return st_linestring (sfr) object
 shape_as_sf_linestring <- function(df) {
   # as suggested by www.github.com/mdsumner
@@ -165,31 +165,36 @@ shape_as_sf_linestring <- function(df) {
   return(sf::st_linestring(m))
 }
 
-#' Transform or convert coordinates of a gtfs feed
+#' Transform coordinates of a gtfs feed
 #' 
 #' @param gtfs_obj gtfs feed (tidygtfs object)
 #' @param crs target coordinate reference system, used by sf::st_transform
 #' @return tidygtfs object with transformed stops and shapes sf dataframes
 #' 
 #' @importFrom sf st_transform
+#' @return gtfs object with transformed sf tables
 #' @export
 gtfs_transform = function(gtfs_obj, crs) {
-  if(!inherits(gtfs_obj$stops, "sf")) {
-    gtfs_obj <- gtfs_as_sf(gtfs_obj)
+  gtfs_obj <- gtfs_as_sf(gtfs_obj)
+  for(tbl in names(gtfs_obj)) {
+    if(inherits(gtfs_obj[[tbl]], "sf")) {
+      gtfs_obj[[tbl]] <- st_transform(gtfs_obj[[tbl]], crs)
+    }
   }
-  gtfs_obj$stops <- st_transform(gtfs_obj$stops, crs)
-  if(feed_contains(gtfs_obj, "shapes")) gtfs_obj$shapes <- st_transform(gtfs_obj$shapes, crs)
-  gtfs_obj
+  return(gtfs_obj)
 }
 
 #' Convert stops and shapes from sf objects to tibbles
 #' 
-#' Coordinates are transformed to lon/lat
+#' Coordinates are transformed to lon/lat columns (`stop_lon`/`stop_lat` or 
+#' `shape_pt_lon`/`shape_pt_lat`)
+#' 
 #' @param gtfs_obj gtfs feed (tidygtfs object)
 #' 
 #' @return tidygtfs object with stops and shapes converted to tibbles
 #' 
 #' @seealso \code{\link{gtfs_as_sf}}
+#' 
 #' @export
 sf_as_tbl = function(gtfs_obj) {
   if(inherits(gtfs_obj$stops, "sf")) {
@@ -205,6 +210,7 @@ sf_as_tbl = function(gtfs_obj) {
 #' @param pts_sf sf object
 #' @param coord_colnames names of the new columns (existing columns are overwritten)
 #' @param remove_geometry remove sf geometry column?
+#' @keywords internal
 sf_points_to_df = function(pts_sf,
                            coord_colnames = c("stop_lon", "stop_lat"), 
                            remove_geometry = TRUE) {
@@ -213,7 +219,7 @@ sf_points_to_df = function(pts_sf,
   stopifnot(length(coord_colnames) == 2)
   
   pts_sf <- sf::st_transform(pts_sf, 4326)
-  mtrx = matrix(unlist(sf::st_geometry(pts_sf)), ncol = 2, byrow = T)
+  mtrx = matrix(unlist(sf::st_geometry(pts_sf)), ncol = 2, byrow = TRUE)
   pts_sf[coord_colnames[1]] <- mtrx[,1]
   pts_sf[coord_colnames[2]] <- mtrx[,2]
 
@@ -228,6 +234,7 @@ sf_points_to_df = function(pts_sf,
 #' @param coord_colnames names of the new columns (existing columns are overwritten)
 #' @param remove_geometry remove sf geometry column?
 #' @importFrom geodist geodist
+#' @keywords internal
 sf_lines_to_df = function(lines_sf,
                           coord_colnames = c("shape_pt_lon", "shape_pt_lat"), 
                           remove_geometry = TRUE) {
@@ -239,11 +246,54 @@ sf_lines_to_df = function(lines_sf,
   shps_list = lapply(sf::st_geometry(lines_sf), function(x) {
     df = as.data.frame(as.matrix(x))
     colnames(df) <- coord_colnames
-    df$shape_pt_sequence <- 1:nrow(df)
-    gdist = geodist(df[c("shape_pt_lon", "shape_pt_lat")], sequential = T)
+    df$shape_pt_sequence <- seq_len(nrow(df))
+    gdist = geodist(df[c("shape_pt_lon", "shape_pt_lat")], sequential = TRUE)
     df$shape_dist_traveled <- c(0, cumsum(round(gdist,1)))
     df
   })
   names(shps_list) <- lines_sf$shape_id
   dplyr::bind_rows(shps_list, .id = "shape_id")
+}
+
+#' Convert a json (read with jsonlite) to sf object
+#'
+#' The json object is written to a temporary file and re-read with sf::read().
+#'
+#' @param json_list list as read by jsonlite::read_json (in gtfsio)
+#'
+#' @return sf object
+#' @importFrom jsonlite write_json
+#' @importFrom sf read_sf
+#' @keywords internal
+json_to_sf = function(json_list) {
+  tmpfile = tempfile(fileext = ".geojson")
+  write_json(json_list, tmpfile, digits = 8, auto_unbox = TRUE)
+  read_sf(tmpfile)
+}
+
+#' Convert an sf object to a json list
+#'
+#' The sf object is written to a temporary file and re-read with jsonlite::read_json().
+#'
+#' @param sf_obj sf table
+#'
+#' @return json list
+#' @importFrom jsonlite read_json
+#' @importFrom sf write_sf
+#' @keywords internal
+sf_to_json = function(sf_obj, layer_name) {
+  tmpfile = tempfile(fileext = ".geojson")
+  write_sf(sf_obj, tmpfile, driver = "GeoJSON", layer = layer_name)
+  read_json(tmpfile)
+}
+
+sf_as_json = function(gtfs_obj) {
+  for(geojson_file in names(gtfs_reference_filetype[gtfs_reference_filetype == "geojson"])) {
+    if(feed_contains(gtfs_obj, geojson_file) && inherits(gtfs_obj[[geojson_file]], "sf")) {
+      json = sf_to_json(gtfs_obj[[geojson_file]], geojson_file)
+      json$name <- geojson_file
+      gtfs_obj[[geojson_file]] <- json
+    }
+  }
+  return(gtfs_obj)
 }

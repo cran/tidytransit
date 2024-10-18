@@ -5,7 +5,7 @@ library(dplyr)
 library(ggplot2)
 
 ## -----------------------------------------------------------------------------
-local_gtfs_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
+local_gtfs_path <- system.file("extdata", "nyc_subway.zip", package = "tidytransit")
 gtfs <- read_gtfs(local_gtfs_path)
 # gtfs <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
 
@@ -109,10 +109,10 @@ ggplot(departures_180823) + theme_bw() +
   scale_color_manual(values = route_colors) +
   labs(title = "Departures from Times Square on 08/23/18")
 
-## ----fig.width=6, fig.height=6------------------------------------------------
+## ----fig.width=7, fig.height=5------------------------------------------------
 departures_180823_sub_7to8 <- departures_180823 %>% 
   filter(stop_id %in% c("127N", "127S")) %>% 
-  filter(departure_time >= hms::hms(hours = 7) & departure_time <= hms::hms(hour = 8))
+  filter(departure_time >= hms::hms(hours = 7) & departure_time <= hms::hms(hours = 8))
 
 ggplot(departures_180823_sub_7to8) + theme_bw() +
   geom_point(aes(y=trip_headsign, x=departure_time, color = route_short_name), size = 1) +

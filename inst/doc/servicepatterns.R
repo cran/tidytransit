@@ -7,7 +7,7 @@ library(ggplot2)
 knitr::opts_chunk$set(echo = TRUE)
 
 ## -----------------------------------------------------------------------------
-local_gtfs_path <- system.file("extdata", "google_transit_nyc_subway.zip", package = "tidytransit")
+local_gtfs_path <- system.file("extdata", "nyc_subway.zip", package = "tidytransit")
 gtfs <- read_gtfs(local_gtfs_path)
 # gtfs <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
 
@@ -40,11 +40,11 @@ head(gtfs$.$servicepatterns)
 ## -----------------------------------------------------------------------------
 head(gtfs$.$dates_servicepatterns)
 
-# service ids used
-n_services <- length(unique(gtfs$trips$service_id)) # 70
+# number of service ids used
+n_services <- length(unique(gtfs$trips$service_id)) # 52
 
 # unique date patterns 
-n_servicepatterns <- length(unique(gtfs$.$servicepatterns$servicepattern_id)) # 7
+n_servicepatterns <- length(unique(gtfs$.$servicepatterns$servicepattern_id)) # 3
 
 ## ----fig.height=4, fig.width=7------------------------------------------------
 date_servicepattern_table <- gtfs$.$dates_servicepatterns %>% left_join(calendar, by = "date")
@@ -141,7 +141,7 @@ ggplot(dates) + theme_bw() +
 
 ## ----fig.height=4, fig.width=7------------------------------------------------
 trips_servicepattern = left_join(select(gtfs$trips, trip_id, service_id), gtfs$.$servicepatterns, by = "service_id")
-trip_dates = left_join(gtfs$.$dates_servicepatterns, trips_servicepattern, by = "servicepattern_id")
+trip_dates = left_join(gtfs$.$dates_servicepatterns, trips_servicepattern, by = "servicepattern_id", relationship = "many-to-many")
 
 trip_dates_count = trip_dates %>% group_by(date) %>% summarise(count = dplyr::n()) 
 trip_dates_count$weekday <- lubridate::wday(trip_dates_count$date, label = T, abbr = T, week_start = 7)

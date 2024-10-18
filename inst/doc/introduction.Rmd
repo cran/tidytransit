@@ -1,10 +1,10 @@
 ---
 title: "Introduction to tidytransit"
-date: "`r Sys.Date()`"
+date: "2023-06-23"
 author: "Tom Buckley"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{tidytransit-Introduction}
+  %\VignetteIndexEntry{Introduction to tidytransit}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -44,7 +44,7 @@ devtools::install_github("r-transit/tidytransit")
 
 # The General Transit Feed Specification
 
-The [summary page for the GTFS standard](https://gtfs.org/schedule/) 
+The [summary page for the GTFS standard](https://gtfs.org/documentation/overview/) 
 is a good resource for more information on the standard.
 
 GTFS feeds contain many linked tables about published transit schedules, service 
@@ -62,9 +62,9 @@ a list of the tables in each feed.
 Below we use the tidytransit `read_gtfs` function in order to read a feed from the NYC MTA 
 into R.
 
-We use a feed included in the package in the example below. But note that you can read 
+We use an example feed included in the package in the example below. But note that you can read 
 directly from the New York City Metropolitan Transit Authority, as shown in the commented 
-code below. 
+code below.
 
 You can also read from any other URL. This is useful because there are many sources for 
 GTFS data, and often the best source is transit service providers themselves. See the next 
@@ -74,7 +74,7 @@ section on "Finding More GTFS Feeds" for more sources of feeds.
 # nyc <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
 
 local_gtfs_path <- system.file("extdata", 
-                               "google_transit_nyc_subway.zip", 
+                               "nyc_subway.zip", 
                                package = "tidytransit")
 nyc <- read_gtfs(local_gtfs_path)
 ```
@@ -133,7 +133,7 @@ You can load it in R and browse it as a data frame. Tidytransit cannot handle GT
 data, so we can remove those entries.
 
 ```{r}
-MobilityData.csv = read.csv("https://bit.ly/catalogs-csv")
+MobilityData.csv = read.csv("https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media")
 
 MobilityData_feedlist = MobilityData.csv %>% 
   as_tibble() %>% 
@@ -187,9 +187,9 @@ MobilityData_sf = MobilityData_feedlist %>%
   ungroup() %>% st_as_sf()
 ```
 
-Now show the feeds on a map:
+These boxes could now be shown on an interactive map.
 
-```{r, fig.width=7}
+```{r, fig.width=7, eval=FALSE}
 library(leaflet)
 leaflet() %>% 
   addProviderTiles(provider = providers$CartoDB.Positron) %>% 
@@ -197,4 +197,3 @@ leaflet() %>%
               fillOpacity = 0.1, label = substr(MobilityData_sf$provider, 0, 60))
 
 ```
-
