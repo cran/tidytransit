@@ -1,7 +1,7 @@
 Package: tidytransit
 Type: Package
 Title: Read, Validate, Analyze, and Map GTFS Feeds
-Version: 1.7.0
+Version: 1.7.1
 Authors@R: c(
     person("Flavio", "Poletti", role = c("aut", "cre"), email = "flavio.poletti@hotmail.ch"),
     person(given = "Daniel",family = "Herszenhut",role = c("aut"),email = "dhersz@gmail.com",comment = c(ORCID = "0000-0001-8066-1105")),
@@ -29,17 +29,19 @@ LazyData: TRUE
 Depends: R (>= 3.6.0)
 Imports: gtfsio (>= 1.2.0), dplyr (>= 1.1.1), data.table (>= 1.12.8),
         rlang, sf, jsonlite, hms, digest, geodist
-Suggests: testthat (>= 3.1.5), knitr, markdown, rmarkdown, ggplot2,
-        scales, lubridate, leaflet
+Suggests: testthat (>= 3.1.5), knitr, rmarkdown, ggplot2, scales,
+        lubridate, leaflet
 RoxygenNote: 7.3.2
-URL: https://github.com/r-transit/tidytransit
+URL: https://github.com/r-transit/tidytransit,
+        https://r-transit.github.io/tidytransit/
 BugReports: https://github.com/r-transit/tidytransit/issues
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2024-10-18 13:36:18 UTC; flaviopoletti
+Packaged: 2025-08-21 10:05:46 UTC; flaviopoletti
 Author: Flavio Poletti [aut, cre],
-  Daniel Herszenhut [aut] (<https://orcid.org/0000-0001-8066-1105>),
+  Daniel Herszenhut [aut] (ORCID:
+    <https://orcid.org/0000-0001-8066-1105>),
   Mark Padgham [aut],
   Tom Buckley [aut],
   Danton Noriega-Goodwin [aut],
@@ -59,4 +61,4 @@ Author: Flavio Poletti [aut, cre],
   Kirill Müller [ctb]
 Maintainer: Flavio Poletti <flavio.poletti@hotmail.ch>
 Repository: CRAN
-Date/Publication: 2024-10-18 13:50:02 UTC
+Date/Publication: 2025-08-21 12:40:02 UTC

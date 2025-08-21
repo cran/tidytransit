@@ -35,7 +35,7 @@ This package requires a working installation of [sf](https://github.com/r-spatia
 
 ```{r, eval=FALSE}
 # Once sf is installed, you can install from CRAN with: 
-install.packages('tidytransit')
+install.packages("tidytransit")
 
 # For the development version from Github:
 # install.packages("devtools")
@@ -129,12 +129,24 @@ Transit agencies might also provide their feeds on their on website.
 MobilityData.org provide a csv file with all their feed sources on their
 [GitHub page](https://github.com/MobilityData/mobility-database-catalogs).
 
+```{r, eval=FALSE}
+mbd_url = "https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media"
+MobilityData.csv = read.csv(mbd_url)
+```
+
 You can load it in R and browse it as a data frame. Tidytransit cannot handle GTFS realtime 
 data, so we can remove those entries.
 
-```{r}
-MobilityData.csv = read.csv("https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media")
+```{r, include=FALSE}
+mdb_url = "https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media"
+MobilityData.csv = tryCatch(
+  read.csv(mdb_url), 
+  warning = function(e) { # If URL is not reachable, load local dataset
+    readRDS(system.file("extdata", "mobilitydata.rds", package = "tidytransit"))
+  })
+```
 
+```{r}
 MobilityData_feedlist = MobilityData.csv %>% 
   as_tibble() %>% 
   filter(data_type == "gtfs")
@@ -169,7 +181,7 @@ bbox_polygon = function(lon_min, lon_max, lat_min, lat_max) {
       lon_max, lat_max,
       lon_max, lat_min,
       lon_min, lat_min),
-    ncol = 2, byrow = T
+    ncol = 2, byrow = TRUE
   )
   polyg = st_polygon(list(corner_coords))
   return(st_sfc(polyg, crs = 4326))
@@ -184,7 +196,8 @@ MobilityData_sf = MobilityData_feedlist %>%
                                  location.bounding_box.maximum_longitude,
                                  location.bounding_box.minimum_latitude,
                                  location.bounding_box.maximum_latitude)) %>% 
-  ungroup() %>% st_as_sf()
+  ungroup() %>% 
+  st_as_sf()
 ```
 
 These boxes could now be shown on an interactive map.
@@ -195,5 +208,4 @@ leaflet() %>%
   addProviderTiles(provider = providers$CartoDB.Positron) %>% 
   addPolygons(data = MobilityData_sf, weight = 2, 
               fillOpacity = 0.1, label = substr(MobilityData_sf$provider, 0, 60))
-
 ```

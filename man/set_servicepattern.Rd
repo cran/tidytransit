@@ -16,7 +16,7 @@ set_servicepattern(
 
 \item{id_prefix}{all servicepattern ids will start with this string}
 
-\item{hash_algo}{hashing algorithm used by digest}
+\item{hash_algo}{hashing algorithm used by \code{\link[digest:digest]{digest::digest()}}}
 
 \item{hash_length}{length the hash should be cut to with \code{substr()}. Use \code{-1} if the full
 hash should be used}
@@ -30,4 +30,9 @@ Each trip has a defined number of dates it runs on. This set of dates is called 
 service pattern in tidytransit. Trips with the same \code{servicepattern} id run on the same
 dates. In general, \code{service_id} can work this way but it is not enforced by the
 GTFS standard.
+}
+\examples{
+gtfs = set_servicepattern(gtfs_duke)
+gtfs$.$dates_servicepatterns
+
 }

@@ -7,7 +7,7 @@ library(dplyr)
 library(tidytransit)
 library(ggplot2)
 library(sf)
-options(dplyr.summarise.inform=F)
+options(dplyr.summarise.inform = FALSE)
 
 ## -----------------------------------------------------------------------------
 local_gtfs_path <- system.file("extdata", "nyc_subway.zip", package = "tidytransit")
@@ -51,7 +51,7 @@ knitr::kable(service_pattern_summary)
 
 ## -----------------------------------------------------------------------------
 service_ids <- gtfs$.$servicepatterns %>% 
-  filter(servicepattern_id == 's_e25d6ca') %>% 
+  filter(servicepattern_id == "s_e25d6ca") %>% 
   pull(service_id)
 
 head(service_ids) %>% 
@@ -117,7 +117,7 @@ routes_sf <- get_route_geometry(gtfs, service_ids = service_ids)
 
 ## -----------------------------------------------------------------------------
 routes_sf <- routes_sf %>% 
-  inner_join(am_route_freq, by = 'route_id')
+  inner_join(am_route_freq, by = "route_id")
 
 ## ----fig.width=6, fig.height=8, warn=FALSE------------------------------------
 # convert to an appropriate coordinate reference system

@@ -4,12 +4,12 @@ library(tidytransit)
 library(dplyr)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  # Once sf is installed, you can install from CRAN with:
-#  install.packages('tidytransit')
-#  
-#  # For the development version from Github:
-#  # install.packages("devtools")
-#  devtools::install_github("r-transit/tidytransit")
+# # Once sf is installed, you can install from CRAN with:
+# install.packages("tidytransit")
+# 
+# # For the development version from Github:
+# # install.packages("devtools")
+# devtools::install_github("r-transit/tidytransit")
 
 ## -----------------------------------------------------------------------------
 # nyc <- read_gtfs("http://web.mta.info/developers/data/nyct/subway/google_transit.zip")
@@ -32,9 +32,19 @@ names(nyc)
 validation_result <- attr(nyc, "validation_result")
 head(validation_result)
 
-## -----------------------------------------------------------------------------
-MobilityData.csv = read.csv("https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media")
+## ----eval=FALSE---------------------------------------------------------------
+# mbd_url = "https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media"
+# MobilityData.csv = read.csv(mbd_url)
 
+## ----include=FALSE------------------------------------------------------------
+mdb_url = "https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media"
+MobilityData.csv = tryCatch(
+  read.csv(mdb_url), 
+  warning = function(e) { # If URL is not reachable, load local dataset
+    readRDS(system.file("extdata", "mobilitydata.rds", package = "tidytransit"))
+  })
+
+## -----------------------------------------------------------------------------
 MobilityData_feedlist = MobilityData.csv %>% 
   as_tibble() %>% 
   filter(data_type == "gtfs")
@@ -42,11 +52,11 @@ MobilityData_feedlist = MobilityData.csv %>%
 str(MobilityData_feedlist)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  gtfs_path_goldengate <- MobilityData_feedlist %>%
-#    filter(provider == "Golden Gate Transit") %>%
-#    pull(urls.direct_download)
-#  
-#  gtfs_goldengate = read_gtfs(gtfs_path_goldengate)
+# gtfs_path_goldengate <- MobilityData_feedlist %>%
+#   filter(provider == "Golden Gate Transit") %>%
+#   pull(urls.direct_download)
+# 
+# gtfs_goldengate = read_gtfs(gtfs_path_goldengate)
 
 ## -----------------------------------------------------------------------------
 # create a bounding box polygon from min/max corner coordinates
@@ -58,7 +68,7 @@ bbox_polygon = function(lon_min, lon_max, lat_min, lat_max) {
       lon_max, lat_max,
       lon_max, lat_min,
       lon_min, lat_min),
-    ncol = 2, byrow = T
+    ncol = 2, byrow = TRUE
   )
   polyg = st_polygon(list(corner_coords))
   return(st_sfc(polyg, crs = 4326))
@@ -73,13 +83,13 @@ MobilityData_sf = MobilityData_feedlist %>%
                                  location.bounding_box.maximum_longitude,
                                  location.bounding_box.minimum_latitude,
                                  location.bounding_box.maximum_latitude)) %>% 
-  ungroup() %>% st_as_sf()
+  ungroup() %>% 
+  st_as_sf()
 
 ## ----fig.width=7, eval=FALSE--------------------------------------------------
-#  library(leaflet)
-#  leaflet() %>%
-#    addProviderTiles(provider = providers$CartoDB.Positron) %>%
-#    addPolygons(data = MobilityData_sf, weight = 2,
-#                fillOpacity = 0.1, label = substr(MobilityData_sf$provider, 0, 60))
-#  
+# library(leaflet)
+# leaflet() %>%
+#   addProviderTiles(provider = providers$CartoDB.Positron) %>%
+#   addPolygons(data = MobilityData_sf, weight = 2,
+#               fillOpacity = 0.1, label = substr(MobilityData_sf$provider, 0, 60))
 

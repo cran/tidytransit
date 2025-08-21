@@ -488,7 +488,7 @@ service, the most trips, stops, and routes.</p>
 to use to identify trips in the GTFS feed for which we want to summarise
 service.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>service_ids <span class="ot">&lt;-</span> gtfs<span class="sc">$</span>.<span class="sc">$</span>servicepatterns <span class="sc">%&gt;%</span> </span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="fu">filter</span>(servicepattern_id <span class="sc">==</span> <span class="st">&#39;s_e25d6ca&#39;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="fu">filter</span>(servicepattern_id <span class="sc">==</span> <span class="st">&quot;s_e25d6ca&quot;</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="fu">pull</span>(service_id)</span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a></span>
 <span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="fu">head</span>(service_ids) <span class="sc">%&gt;%</span> </span>
@@ -896,7 +896,7 @@ the selected service.</p>
 <span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>routes_sf <span class="ot">&lt;-</span> <span class="fu">get_route_geometry</span>(gtfs, <span class="at">service_ids =</span> service_ids)</span></code></pre></div>
 <p>Then we join the geometries to the calculated frequencies:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>routes_sf <span class="ot">&lt;-</span> routes_sf <span class="sc">%&gt;%</span> </span>
-<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>  <span class="fu">inner_join</span>(am_route_freq, <span class="at">by =</span> <span class="st">&#39;route_id&#39;</span>)</span></code></pre></div>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>  <span class="fu">inner_join</span>(am_route_freq, <span class="at">by =</span> <span class="st">&quot;route_id&quot;</span>)</span></code></pre></div>
 <p>And finally, lets plot the routes with median headways of less than
 10 minutes in the morning.</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># convert to an appropriate coordinate reference system</span></span>
