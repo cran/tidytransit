@@ -1,7 +1,7 @@
 Package: tidytransit
 Type: Package
 Title: Read, Validate, Analyze, and Map GTFS Feeds
-Version: 1.7.1
+Version: 1.8.0
 Authors@R: c(
     person("Flavio", "Poletti", role = c("aut", "cre"), email = "flavio.poletti@hotmail.ch"),
     person(given = "Daniel",family = "Herszenhut",role = c("aut"),email = "dhersz@gmail.com",comment = c(ORCID = "0000-0001-8066-1105")),
@@ -28,17 +28,17 @@ License: GPL
 LazyData: TRUE
 Depends: R (>= 3.6.0)
 Imports: gtfsio (>= 1.2.0), dplyr (>= 1.1.1), data.table (>= 1.12.8),
-        rlang, sf, jsonlite, hms, digest, geodist
+        sf, jsonlite, hms, digest, geodist
 Suggests: testthat (>= 3.1.5), knitr, rmarkdown, ggplot2, scales,
         lubridate, leaflet
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 URL: https://github.com/r-transit/tidytransit,
         https://r-transit.github.io/tidytransit/
 BugReports: https://github.com/r-transit/tidytransit/issues
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2025-08-21 10:05:46 UTC; flaviopoletti
+Packaged: 2026-01-26 16:01:57 UTC; flaviopoletti
 Author: Flavio Poletti [aut, cre],
   Daniel Herszenhut [aut] (ORCID:
     <https://orcid.org/0000-0001-8066-1105>),
@@ -61,4 +61,4 @@ Author: Flavio Poletti [aut, cre],
   Kirill Müller [ctb]
 Maintainer: Flavio Poletti <flavio.poletti@hotmail.ch>
 Repository: CRAN
-Date/Publication: 2025-08-21 12:40:02 UTC
+Date/Publication: 2026-01-26 16:20:02 UTC
